@@ -1,6 +1,6 @@
 "use client";
 
-import { UserSettings } from "@prisma/client";
+import { UserSettings } from "@/lib/types/settings";
 import EmergencyEffects from "./EmergencyEffects";
 import CountdownPopup from "./CountdownPopup";
 import ShakeDetector from "./ShakeDetector";

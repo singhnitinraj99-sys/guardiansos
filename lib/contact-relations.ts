@@ -6,7 +6,7 @@ import {
     Home
 } from "lucide-react";
 
-import { RelationType } from "@prisma/client";
+import type { RelationType } from "@/lib/types/relations";
 
 export const relationMap = {
     PARENT: {

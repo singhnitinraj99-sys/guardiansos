@@ -1,4 +1,4 @@
-import { RelationType } from "@prisma/client";
+import { RelationType } from "@/lib/types/relations";
 import { z } from "zod";
 
 export const ContactSchema = z.object({

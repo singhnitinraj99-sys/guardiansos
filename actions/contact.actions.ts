@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { currentUser } from "@clerk/nextjs/server";
 import { ContactSchema } from "@/lib/validations/contact";
 import { prisma } from "@/lib/prisma";
-import { RelationType } from "@prisma/client";
+import type { RelationType } from "@/lib/types/relations";
 
 async function getDbUser() {
   const clerkUser = await currentUser();

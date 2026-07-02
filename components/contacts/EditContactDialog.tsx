@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Pencil } from "lucide-react";
-import { EmergencyContact } from "@prisma/client";
+import { EmergencyContact } from "@/lib/types/contacts";
 
 import {
   Dialog,

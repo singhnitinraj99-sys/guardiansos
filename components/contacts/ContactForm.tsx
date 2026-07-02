@@ -3,7 +3,7 @@
 import { useEffect, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { RelationType } from "@prisma/client"
+import { RelationType } from "@/lib/types/relations";
 import { z } from "zod";
 import { toast } from "sonner";
 import { ContactSchema } from "@/lib/validations/contact";

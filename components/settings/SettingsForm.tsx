@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { UserSettings } from "@prisma/client";
+import { UserSettings } from "@/lib/types/settings";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";

@@ -1,4 +1,4 @@
-import { EmergencyContact } from "@prisma/client";
+import { EmergencyContact } from "@/lib/types/contacts";
 import ContactCard from "./ContactCard";
 
 interface Props {
