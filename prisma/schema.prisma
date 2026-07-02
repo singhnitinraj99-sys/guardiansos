@@ -1,13 +1,108 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../lib/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+enum RelationType {
+  PARENT
+  SPOUSE
+  SIBLING
+  FRIEND
+  COLLEAGUE
+  OTHER
+}
+
+model User {
+  id        String   @id @default(cuid())
+
+  clerkId   String   @unique
+
+  email     String   @unique
+
+  firstName String?
+
+  lastName  String?
+
+  imageUrl  String?
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  contacts  EmergencyContact[]
+
+  logs      SOSLog[]
+
+  settings  UserSettings?
+}
+
+model EmergencyContact {
+  id         String   @id @default(cuid())
+
+  name       String
+
+  phone      String
+
+  relation   RelationType
+
+  isPrimary  Boolean  @default(false)
+
+  createdAt  DateTime @default(now())
+
+  updatedAt  DateTime @updatedAt
+
+  userId     String
+
+  user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+
+  @@unique([userId, phone])
+}  
+
+
+enum SOSStatus {
+  PENDING
+  SENT
+  FAILED
+  OFFLINE
+}
+
+model SOSLog {
+  id        String    @id @default(cuid())
+  latitude  Float?
+  longitude Float?
+  message   String?
+  status    SOSStatus
+  createdAt DateTime  @default(now())
+
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserSettings {
+
+  id String @id @default(cuid())
+
+  shakeSensitivity Int @default(16)
+
+  countdown Int @default(5)
+
+  alarmVolume Int @default(100)
+
+  vibration Boolean @default(true)
+
+  smsEnabled Boolean @default(true)
+
+  locationEnabled Boolean @default(true)
+
+  darkMode Boolean @default(false)
+
+  userId String @unique
+
+  user User @relation(fields:[userId], references:[id], onDelete:Cascade)
+
 }
