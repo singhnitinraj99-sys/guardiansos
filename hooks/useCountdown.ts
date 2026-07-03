@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface UseCountdownProps {
   seconds: number;
@@ -14,11 +14,13 @@ export function useCountdown({
   onComplete,
 }: UseCountdownProps) {
   const [count, setCount] = useState(seconds);
+  const completedRef = useRef(false);
 
   // Reset whenever popup opens
   useEffect(() => {
     if (active) {
       setCount(seconds);
+      completedRef.current = false;
     }
   }, [active, seconds]);
 
@@ -26,7 +28,10 @@ export function useCountdown({
     if (!active) return;
 
     if (count <= 0) {
-      onComplete();
+      if (!completedRef.current) {
+        completedRef.current = true;
+        onComplete();
+      }
       return;
     }
 

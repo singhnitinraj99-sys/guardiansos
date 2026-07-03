@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -8,7 +9,6 @@ import {
   AlertDialogTitle,
   AlertDialogFooter,
   AlertDialogCancel,
-  AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
 import { ShieldAlert } from "lucide-react";
@@ -65,9 +65,14 @@ export default function CountdownPopup({
             Cancel
           </AlertDialogCancel>
 
-          <AlertDialogAction onClick={onContinue}>
+          <Button
+            type="button"
+            variant="default"
+            size="default"
+            onClick={onContinue}
+          >
             Continue Now
-          </AlertDialogAction>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
