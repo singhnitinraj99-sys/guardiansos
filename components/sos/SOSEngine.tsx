@@ -4,7 +4,7 @@ import { UserSettings } from "@/lib/types/settings";
 import EmergencyEffects from "./EmergencyEffects";
 import CountdownPopup from "./CountdownPopup";
 import ShakeDetector from "./ShakeDetector";
-
+import StopSOSButton from "./StopSOSButton";
 import { useSOS } from "./SOSProvider";
 
 interface Props {
@@ -41,6 +41,8 @@ export default function SOSEngine({
   volume={settings.alarmVolume}
     vibrationEnabled={settings.vibration}
 />      
+   
+   <StopSOSButton />
     </>
   );
 }

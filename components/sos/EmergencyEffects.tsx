@@ -2,7 +2,9 @@
 
 import { useAlarm } from "@/hooks/useAlarm";
 import { useVibration } from "@/hooks/useVibration";
-
+import FlashScreen from "./FlashScreen";
+import SOSOverlay from "./SOSOverlay";
+import EmergencyDashboard from "./EmergencyDashboard";
 interface Props {
   active: boolean;
   volume: number;
@@ -24,5 +26,12 @@ export default function EmergencyEffects({
     enabled: vibrationEnabled,
   });
 
-  return null;
+  return (
+  <>
+    <FlashScreen active={active} />
+
+    <EmergencyDashboard />
+  </>
+);
+
 }

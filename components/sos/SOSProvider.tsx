@@ -16,6 +16,7 @@ interface SOSContextType {
   startSOS: () => void;
   cancelSOS: () => void;
   continueSOS: () => void;
+  stopSOS: () => void;
 }
 
 
@@ -52,6 +53,16 @@ function continueSOS() {
   setAlarmActive(true);
   toast.success("GuardianSOS Activated");
 }
+
+function stopSOS() {
+  setOpen(false);
+
+  setAlarmActive(false);
+
+  setIsRunning(false);
+
+  toast.success("GuardianSOS Stopped");
+}
   return (
     <SOSContext.Provider
       value={{
@@ -60,6 +71,7 @@ function continueSOS() {
         startSOS,
         cancelSOS,
         continueSOS,
+        stopSOS,
         alarmActive,
       }}
     >
