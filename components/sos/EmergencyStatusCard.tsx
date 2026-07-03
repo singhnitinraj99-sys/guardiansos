@@ -1,28 +1,73 @@
 "use client";
 
-import { CheckCircle2 } from "lucide-react";
+import {
+  CheckCircle2,
+  LoaderCircle,
+  XCircle,
+  Circle,
+} from "lucide-react";
+
+import { EmergencyStatus } from "@/types/emergency";
 
 interface Props {
   title: string;
-  status: string;
+  status: EmergencyStatus;
 }
 
 export default function EmergencyStatusCard({
   title,
   status,
 }: Props) {
+  function renderIcon() {
+    switch (status) {
+      case "loading":
+        return (
+          <LoaderCircle className="h-5 w-5 animate-spin text-yellow-500" />
+        );
+
+      case "success":
+        return (
+          <CheckCircle2 className="h-5 w-5 text-green-500" />
+        );
+
+      case "failed":
+        return (
+          <XCircle className="h-5 w-5 text-red-500" />
+        );
+
+      default:
+        return (
+          <Circle className="h-5 w-5 text-gray-500" />
+        );
+    }
+  }
+
+  function renderLabel() {
+    switch (status) {
+      case "loading":
+        return "Processing";
+
+      case "success":
+        return "Completed";
+
+      case "failed":
+        return "Failed";
+
+      default:
+        return "Waiting";
+    }
+  }
+
   return (
-    <div className="rounded-xl border bg-card/80 p-4">
-      <div className="flex items-center justify-between">
-        <span className="font-medium">
-          {title}
-        </span>
+    <div className="rounded-xl border p-4">
+      <div className="flex justify-between items-center">
+        <span>{title}</span>
 
-        <span className="flex items-center gap-2 text-sm">
-          <CheckCircle2 className="h-4 w-4 text-green-500" />
+        <div className="flex items-center gap-2">
+          {renderIcon()}
 
-          {status}
-        </span>
+          <span>{renderLabel()}</span>
+        </div>
       </div>
     </div>
   );

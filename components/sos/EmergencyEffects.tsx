@@ -2,13 +2,16 @@
 
 import { useAlarm } from "@/hooks/useAlarm";
 import { useVibration } from "@/hooks/useVibration";
+
 import FlashScreen from "./FlashScreen";
-import SOSOverlay from "./SOSOverlay";
 import EmergencyDashboard from "./EmergencyDashboard";
+import EmergencyWorkflow from "./EmergencyWorkflow";
+
 interface Props {
   active: boolean;
   volume: number;
   vibrationEnabled: boolean;
+  locationEnabled: boolean;
 }
 
 export default function EmergencyEffects({
@@ -27,11 +30,12 @@ export default function EmergencyEffects({
   });
 
   return (
-  <>
-    <FlashScreen active={active} />
+    <>
+      <FlashScreen active={active} />
 
-    <EmergencyDashboard />
-  </>
-);
+      <EmergencyDashboard />
 
+      <EmergencyWorkflow />
+    </>
+  );
 }

@@ -253,3 +253,36 @@ export async function getPrimaryContact() {
     },
   });
 }
+
+
+export async function getEmergencyContacts() {
+  const clerkUser = await currentUser();
+
+  if (!clerkUser) {
+    throw new Error("Unauthorized");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      clerkId: clerkUser.id,
+    },
+  });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  return prisma.emergencyContact.findMany({
+    where: {
+      userId: user.id,
+    },
+    orderBy: [
+      {
+        isPrimary: "desc",
+      },
+      {
+        createdAt: "asc",
+      },
+    ],
+  });
+}
