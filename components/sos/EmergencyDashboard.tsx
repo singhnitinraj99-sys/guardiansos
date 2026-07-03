@@ -12,7 +12,7 @@ import { useSOS } from "./SOSProvider";
 
 import EmergencyStatusCard from "./EmergencyStatusCard";
 import StopSOSDialog from "./StopSOSDialog";
-
+import CallHandler from "./CallHandler";
 
 export default function EmergencyDashboard() {
   const { alarmActive } = useSOS();
@@ -25,39 +25,26 @@ export default function EmergencyDashboard() {
         <div className="text-center">
           <ShieldAlert className="mx-auto h-20 w-20 text-red-500 animate-pulse" />
 
-          <h1 className="mt-4 text-4xl font-bold">
-            EMERGENCY MODE
-          </h1>
+          <h1 className="mt-4 text-4xl font-bold">EMERGENCY MODE</h1>
 
           <p className="mt-2 text-muted-foreground">
             GuardianSOS is handling your emergency.
           </p>
         </div>
 
-        <EmergencyStatusCard
-          title="Alarm"
-          status="ACTIVE"
-        />
+        <EmergencyStatusCard title="Alarm" status="ACTIVE" />
 
-        <EmergencyStatusCard
-          title="Vibration"
-          status="ACTIVE"
-        />
+        <EmergencyStatusCard title="Vibration" status="ACTIVE" />
 
-        <EmergencyStatusCard
-          title="Location"
-          status="Waiting..."
-        />
+        <EmergencyStatusCard title="Location" status="Waiting..." />
 
-        <EmergencyStatusCard
-          title="Calling"
-          status="Waiting..."
-        />
+        <div className="space-y-3">
+          <EmergencyStatusCard title="Calling" status="Ready" />
 
-        <EmergencyStatusCard
-          title="SMS"
-          status="Waiting..."
-        />
+          <CallHandler />
+        </div>
+
+        <EmergencyStatusCard title="SMS" status="Waiting..." />
 
         <StopSOSDialog />
       </div>

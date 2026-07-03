@@ -229,3 +229,27 @@ export async function deleteContact(contactId: string) {
     success: true,
   };
 }
+
+
+export async function getPrimaryContact() {
+  const clerkUser = await currentUser();
+
+  if (!clerkUser) {
+    throw new Error("Unauthorized");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      clerkId: clerkUser.id,
+    },
+  });
+
+  if (!user) return null;
+
+  return prisma.emergencyContact.findFirst({
+    where: {
+      userId: user.id,
+      isPrimary: true,
+    },
+  });
+}
