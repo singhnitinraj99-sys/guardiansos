@@ -11,16 +11,25 @@ import {
 } from "react";
 
 import { toast } from "sonner";
+
 import { EmergencyStatus } from "@/types/emergency";
 import { LocationData } from "@/types/location";
 
+export type SOSState =
+  | "IDLE"
+  | "COUNTDOWN"
+  | "ACTIVE";
+
 interface SOSContextType {
+  state: SOSState;
+
   open: boolean;
   isRunning: boolean;
   alarmActive: boolean;
 
   location: LocationData | null;
   setLocation: Dispatch<SetStateAction<LocationData | null>>;
+
   locationStatus: EmergencyStatus;
   setLocationStatus: Dispatch<SetStateAction<EmergencyStatus>>;
 
@@ -32,6 +41,7 @@ interface SOSContextType {
 
   logStatus: EmergencyStatus;
   setLogStatus: Dispatch<SetStateAction<EmergencyStatus>>;
+
   startSOS: () => void;
   cancelSOS: () => void;
   continueSOS: () => void;
@@ -40,55 +50,63 @@ interface SOSContextType {
 
 const SOSContext = createContext<SOSContextType | null>(null);
 
-export function SOSProvider({ children }: { children: ReactNode }) {
-  const [open, setOpen] = useState(false);
+export function SOSProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const [state, setState] =
+    useState<SOSState>("IDLE");
 
-  const [isRunning, setIsRunning] = useState(false);
+  const [location, setLocation] =
+    useState<LocationData | null>(null);
 
-  const [alarmActive, setAlarmActive] = useState(false);
+  const [locationStatus, setLocationStatus] =
+    useState<EmergencyStatus>("idle");
 
-  const [location, setLocation] = useState<LocationData | null>(null);
+  const [callStatus, setCallStatus] =
+    useState<EmergencyStatus>("idle");
 
-  const [locationStatus, setLocationStatus] = useState<EmergencyStatus>("idle");
+  const [smsStatus, setSmsStatus] =
+    useState<EmergencyStatus>("idle");
 
-  const [callStatus, setCallStatus] = useState<EmergencyStatus>("idle");
-
-  const [smsStatus, setSmsStatus] = useState<EmergencyStatus>("idle");
-
-  const [logStatus, setLogStatus] = useState<EmergencyStatus>("idle");
+  const [logStatus, setLogStatus] =
+    useState<EmergencyStatus>("idle");
 
   const startSOS = useCallback(() => {
-    if (isRunning) return;
+    if (state !== "IDLE") return;
 
-    setOpen(true);
-  }, [isRunning]);
+    setState("COUNTDOWN");
+  }, [state]);
 
   const cancelSOS = useCallback(() => {
-    setOpen(false);
-
-    setAlarmActive(false);
-
-    setIsRunning(false);
+    setState("IDLE");
 
     setLocation(null);
+
+    setLocationStatus("idle");
+    setCallStatus("idle");
+    setSmsStatus("idle");
+    setLogStatus("idle");
   }, []);
 
   const continueSOS = useCallback(() => {
-    setOpen(false);
-    setIsRunning(true);
-    setAlarmActive(true);
+    console.log("GuardianSOS Activated");
+
+    setState("ACTIVE");
 
     toast.success("GuardianSOS Activated");
   }, []);
 
   const stopSOS = useCallback(() => {
-    setOpen(false);
-
-    setAlarmActive(false);
-
-    setIsRunning(false);
+    setState("IDLE");
 
     setLocation(null);
+
+    setLocationStatus("idle");
+    setCallStatus("idle");
+    setSmsStatus("idle");
+    setLogStatus("idle");
 
     toast.success("GuardianSOS Stopped");
   }, []);
@@ -96,9 +114,11 @@ export function SOSProvider({ children }: { children: ReactNode }) {
   return (
     <SOSContext.Provider
       value={{
-        open,
-        isRunning,
-        alarmActive,
+        state,
+
+        open: state === "COUNTDOWN",
+        isRunning: state === "ACTIVE",
+        alarmActive: state === "ACTIVE",
 
         location,
         setLocation,
@@ -130,7 +150,9 @@ export function useSOS() {
   const context = useContext(SOSContext);
 
   if (!context) {
-    throw new Error("useSOS must be used inside SOSProvider");
+    throw new Error(
+      "useSOS must be used inside SOSProvider"
+    );
   }
 
   return context;

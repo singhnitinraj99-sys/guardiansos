@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+
 export default function SOSPage() {
   return (
     <div className="container py-10">
@@ -8,6 +10,7 @@ export default function SOSPage() {
       <p className="text-muted-foreground mt-2">
         Shake your phone twice to test the emergency system.
       </p>
+    
     </div>
   );
 }

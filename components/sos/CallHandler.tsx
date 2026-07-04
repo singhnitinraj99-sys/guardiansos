@@ -1,10 +1,26 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { getPrimaryContact } from "@/actions/contact.actions";
 import CallButton from "./CallButton";
 
-export default async function CallHandler() {
-  const contact = await getPrimaryContact();
+export default function CallHandler() {
+  const [phone, setPhone] = useState<string | null>(null);
 
-  if (!contact) {
+  useEffect(() => {
+    async function load() {
+      try {
+        const contact = await getPrimaryContact();
+        setPhone(contact?.phone ?? null);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    load();
+  }, []);
+
+  if (!phone) {
     return (
       <p className="text-center text-sm text-red-500">
         No primary contact found.
@@ -12,5 +28,5 @@ export default async function CallHandler() {
     );
   }
 
-  return <CallButton phone={contact.phone} />;
+  return <CallButton phone={phone} />;
 }

@@ -6,6 +6,7 @@ import CountdownPopup from "./CountdownPopup";
 import ShakeDetector from "./ShakeDetector";
 import StopSOSButton from "./StopSOSButton";
 import { useSOS } from "./SOSProvider";
+import { Button } from "../ui/button";
 
 interface Props {
   settings: UserSettings;
@@ -45,6 +46,10 @@ export default function SOSEngine({
     locationEnabled={settings.locationEnabled}
 />      
    
+ {/* <Button onClick={startSOS}>
+        Test SOS
+      </Button> */}
+
    <StopSOSButton />
     </>
   );

@@ -64,15 +64,19 @@ export default function CountdownPopup({
           <AlertDialogCancel onClick={onCancel}>
             Cancel
           </AlertDialogCancel>
+            
 
-          <Button
+            <Button onClick={onContinue}>
+  Continue Now
+</Button>
+          {/* <Button
             type="button"
             variant="default"
             size="default"
             onClick={onContinue}
           >
             Continue Now
-          </Button>
+          </Button> */}
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
