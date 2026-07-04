@@ -24,10 +24,12 @@ export default function SOSEngine({
 
   return (
     <>
-      <ShakeDetector
-        threshold={settings.shakeSensitivity}
-        onEmergencyDetected={startSOS}
-      />
+    
+    <ShakeDetector
+    threshold={settings.shakeSensitivity}
+    enabled={!open && !alarmActive}
+    onEmergencyDetected={startSOS}
+/>
 
       <CountdownPopup
         open={open}

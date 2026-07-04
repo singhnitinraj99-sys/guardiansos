@@ -9,9 +9,9 @@ interface UseShakeOptions {
   onDoubleShake: () => void;
 }
 
-
-const DOUBLE_SHAKE_WINDOW = 2000;
+const DOUBLE_SHAKE_WINDOW = 1500;
 const SHAKE_COOLDOWN = 3000;
+const SHAKE_DEBOUNCE = 350;
 
 export function useShake({
   threshold,
@@ -19,40 +19,43 @@ export function useShake({
   onDoubleShake,
 }: UseShakeOptions) {
   const [supported, setSupported] = useState(false);
-  const [shakeCount, setShakeCount] = useState(0);
   const [permissionRequired, setPermissionRequired] = useState(false);
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [permissionError, setPermissionError] = useState<string | null>(null);
 
+  const previousReading = useRef<{
+    x: number;
+    y: number;
+    z: number;
+  } | null>(null);
+
   const firstShakeTime = useRef<number | null>(null);
+  const lastShakeTime = useRef(0);
   const cooldownUntil = useRef(0);
-  const previousReading = useRef({
-    x: 0,
-    y: 0,
-    z: 0,
-  });
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
     if (!enabled) return;
 
-    if (!("DeviceMotionEvent" in window)) {
-      return;
-    }
+    if (typeof window === "undefined") return;
 
-    const requestPermissionFunc = (DeviceMotionEvent as any).requestPermission;
+    if (!("DeviceMotionEvent" in window)) return;
 
-    if (typeof requestPermissionFunc === "function" && !permissionGranted) {
-      setSupported(true);
+    setSupported(true);
+
+    const requestPermission = (DeviceMotionEvent as any).requestPermission;
+
+    if (
+      typeof requestPermission === "function" &&
+      !permissionGranted
+    ) {
       setPermissionRequired(true);
       return;
     }
 
-    setSupported(true);
-
     function handleMotion(event: DeviceMotionEvent) {
-      const acceleration = event.acceleration ?? event.accelerationIncludingGravity;
+      const acceleration =
+        event.acceleration ??
+        event.accelerationIncludingGravity;
 
       if (!acceleration) return;
 
@@ -62,83 +65,121 @@ export function useShake({
         z: acceleration.z ?? 0,
       };
 
-      const delta = calculateDelta(previousReading.current, current);
+      // First reading
+      if (!previousReading.current) {
+        previousReading.current = current;
+        return;
+      }
+
+      const delta = calculateDelta(
+        previousReading.current,
+        current
+      );
 
       previousReading.current = current;
 
-      console.log({ delta, threshold });
+      const now = Date.now();
+
+      // SOS cooldown
+      if (now < cooldownUntil.current) {
+        return;
+      }
+
+      // Debounce motion events
+      if (
+        now - lastShakeTime.current <
+        SHAKE_DEBOUNCE
+      ) {
+        return;
+      }
 
       if (delta < threshold) {
         return;
       }
 
-      const now = Date.now();
+      lastShakeTime.current = now;
 
-      if (now < cooldownUntil.current) {
-        return;
-      }
-
+      // First shake
       if (!firstShakeTime.current) {
         firstShakeTime.current = now;
-        setShakeCount(1);
-
-        setTimeout(() => {
-          firstShakeTime.current = null;
-          setShakeCount(0);
-        }, DOUBLE_SHAKE_WINDOW);
 
         return;
       }
 
-      if (now - firstShakeTime.current <= DOUBLE_SHAKE_WINDOW) {
-        cooldownUntil.current = now + SHAKE_COOLDOWN;
-
+      // Second shake
+      if (
+        now - firstShakeTime.current <=
+        DOUBLE_SHAKE_WINDOW
+      ) {
         firstShakeTime.current = null;
-        setShakeCount(0);
+
+        cooldownUntil.current =
+          now + SHAKE_COOLDOWN;
 
         onDoubleShake();
+
+        return;
       }
+
+      // Restart detection
+      firstShakeTime.current = now;
     }
 
-    window.addEventListener("devicemotion", handleMotion);
+    window.addEventListener(
+      "devicemotion",
+      handleMotion
+    );
 
     return () => {
-      window.removeEventListener("devicemotion", handleMotion);
+      window.removeEventListener(
+        "devicemotion",
+        handleMotion
+      );
     };
-  }, [threshold, onDoubleShake, permissionGranted, enabled]);
+  }, [
+    enabled,
+    threshold,
+    permissionGranted,
+    onDoubleShake,
+  ]);
 
-  async function requestPermission() {
-    if (typeof window === "undefined") return;
+  async function requestMotionPermission() {
+    const requestPermission =
+      (DeviceMotionEvent as any)
+        .requestPermission;
 
-    const requestPermissionFunc = (DeviceMotionEvent as any).requestPermission;
-
-    if (typeof requestPermissionFunc !== "function") {
-      setPermissionError("This browser does not support motion permission requests.");
+    if (
+      typeof requestPermission !== "function"
+    ) {
       return;
     }
 
     try {
-      const result = await requestPermissionFunc();
+      const result =
+        await requestPermission();
 
       if (result === "granted") {
         setPermissionGranted(true);
         setPermissionRequired(false);
         setPermissionError(null);
       } else {
-        setPermissionError("Motion permission denied.");
+        setPermissionError(
+          "Motion permission denied."
+        );
       }
     } catch {
-      setPermissionError("Unable to request motion permission.");
+      setPermissionError(
+        "Unable to request motion permission."
+      );
     }
   }
-  
 
   return {
     supported,
-    shakeCount,
     permissionRequired,
     permissionGranted,
     permissionError,
-    requestPermission,
+    requestPermission:
+      requestMotionPermission,
   };
 }

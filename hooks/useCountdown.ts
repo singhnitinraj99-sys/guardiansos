@@ -14,33 +14,38 @@ export function useCountdown({
   onComplete,
 }: UseCountdownProps) {
   const [count, setCount] = useState(seconds);
-  const completedRef = useRef(false);
 
-  // Reset whenever popup opens
+  const completed = useRef(false);
+
   useEffect(() => {
-    if (active) {
-      setCount(seconds);
-      completedRef.current = false;
-    }
+    if (!active) return;
+
+    setCount(seconds);
+
+    completed.current = false;
   }, [active, seconds]);
 
   useEffect(() => {
     if (!active) return;
 
-    if (count <= 0) {
-      if (!completedRef.current) {
-        completedRef.current = true;
-        onComplete();
-      }
+    if (count === 0 && !completed.current) {
+      console.log("Countdown finished");
+      completed.current = true;
+
+      onComplete();
+
       return;
     }
 
+    if (count <= 0) return;
+
     const timer = setTimeout(() => {
-      setCount((prev) => prev - 1);
+      setCount((c) => c - 1);
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [count, active, onComplete]);
+
+  }, [count, active]);
 
   return count;
 }

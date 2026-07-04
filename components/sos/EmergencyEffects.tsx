@@ -23,7 +23,7 @@ export default function EmergencyEffects({
     active,
     volume,
   });
-
+console.log("EmergencyEffects active:", active);
   useVibration({
     active,
     enabled: vibrationEnabled,

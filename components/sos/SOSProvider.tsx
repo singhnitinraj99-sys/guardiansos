@@ -7,6 +7,7 @@ import {
   ReactNode,
   Dispatch,
   SetStateAction,
+  useCallback,
 } from "react";
 
 import { toast } from "sonner";
@@ -56,13 +57,13 @@ export function SOSProvider({ children }: { children: ReactNode }) {
 
   const [logStatus, setLogStatus] = useState<EmergencyStatus>("idle");
 
-  function startSOS() {
+  const startSOS = useCallback(() => {
     if (isRunning) return;
 
     setOpen(true);
-  }
+  }, [isRunning]);
 
-  function cancelSOS() {
+  const cancelSOS = useCallback(() => {
     setOpen(false);
 
     setAlarmActive(false);
@@ -70,19 +71,17 @@ export function SOSProvider({ children }: { children: ReactNode }) {
     setIsRunning(false);
 
     setLocation(null);
-  }
+  }, []);
 
-  function continueSOS() {
+  const continueSOS = useCallback(() => {
     setOpen(false);
-
     setIsRunning(true);
-
     setAlarmActive(true);
 
     toast.success("GuardianSOS Activated");
-  }
+  }, []);
 
-  function stopSOS() {
+  const stopSOS = useCallback(() => {
     setOpen(false);
 
     setAlarmActive(false);
@@ -92,7 +91,7 @@ export function SOSProvider({ children }: { children: ReactNode }) {
     setLocation(null);
 
     toast.success("GuardianSOS Stopped");
-  }
+  }, []);
 
   return (
     <SOSContext.Provider
