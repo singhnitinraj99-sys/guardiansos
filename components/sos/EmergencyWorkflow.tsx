@@ -1,21 +1,112 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+
+import { getCurrentLocation } from "@/lib/geolocation";
+import { startEmergency } from "@/actions/sos.actions";
+
 import { useSOS } from "./SOSProvider";
 
 export default function EmergencyWorkflow() {
-  const { alarmActive } = useSOS();
+  const {
+    alarmActive,
+
+    setLocation,
+
+    setLocationStatus,
+
+    setLogStatus,
+
+    setSmsStatus,
+
+    setCallStatus,
+  } = useSOS();
+
+  const running = useRef(false);
 
   useEffect(() => {
     if (!alarmActive) return;
 
-    console.log("Emergency workflow started");
+    if (running.current) return;
 
-    // Temporary test only
-    setTimeout(() => {
-      console.log("Workflow completed");
-    }, 1000);
-  }, [alarmActive]);
+    running.current = true;
+
+    async function executeWorkflow() {
+      let latitude: number | undefined;
+      let longitude: number | undefined;
+
+      // -----------------------------
+      // STEP 1 : LOCATION
+      // -----------------------------
+      try {
+        setLocationStatus("loading");
+
+        const location = await getCurrentLocation();
+
+        latitude = location.latitude;
+        longitude = location.longitude;
+
+        setLocation(location);
+
+        setLocationStatus("completed");
+      } catch (error) {
+        console.error("Location Error:", error);
+
+        setLocationStatus("failed");
+      }
+
+      // -----------------------------
+      // STEP 2 : SOS + SMS
+      // -----------------------------
+      try {
+        setLogStatus("loading");
+        setSmsStatus("loading");
+
+        const result = await startEmergency({
+          latitude,
+          longitude,
+        });
+
+        if (result.success) {
+          setLogStatus("completed");
+
+          if (
+            "smsSent" in result &&
+            typeof result.smsSent === "number" &&
+            result.smsSent > 0
+          ) {
+            setSmsStatus("completed");
+          } else {
+            setSmsStatus("failed");
+          }
+        } else {
+          setLogStatus("failed");
+          setSmsStatus("failed");
+        }
+      } catch (error) {
+        console.error("Emergency Error:", error);
+
+        setLogStatus("failed");
+        setSmsStatus("failed");
+      }
+
+      // -----------------------------
+      // STEP 3 : CALL (Next Phase)
+      // -----------------------------
+      setCallStatus("idle");
+
+      running.current = false;
+    }
+
+    executeWorkflow();
+  }, [
+    alarmActive,
+    setLocation,
+    setLocationStatus,
+    setLogStatus,
+    setSmsStatus,
+    setCallStatus,
+  ]);
 
   return null;
 }

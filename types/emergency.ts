@@ -2,4 +2,7 @@ export type EmergencyStatus =
   | "idle"
   | "loading"
   | "success"
-  | "failed";
+  | "completed"
+  | "failed"
+  | "waiting"
+  | "pending";

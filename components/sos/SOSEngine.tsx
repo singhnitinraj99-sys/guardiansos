@@ -46,9 +46,9 @@ export default function SOSEngine({
     locationEnabled={settings.locationEnabled}
 />      
    
- {/* <Button onClick={startSOS}>
+ <Button onClick={startSOS}>
         Test SOS
-      </Button> */}
+      </Button>
 
    <StopSOSButton />
     </>

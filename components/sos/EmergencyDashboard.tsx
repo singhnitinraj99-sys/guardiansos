@@ -6,7 +6,6 @@ import { useSOS } from "./SOSProvider";
 import EmergencyStatusCard from "./EmergencyStatusCard";
 import StopSOSDialog from "./StopSOSDialog";
 import CallHandler from "./CallHandler";
-import { useEmergencyWorkflow } from "@/hooks/useEmergencyWorkflow";
 
 export default function EmergencyDashboard() {
   const {
@@ -16,11 +15,6 @@ export default function EmergencyDashboard() {
     smsStatus,
     logStatus,
   } = useSOS();
-
-  const {
-  workflow,
-  updateStep,
-} = useEmergencyWorkflow();
 
   if (!alarmActive) return null;
 
@@ -51,26 +45,27 @@ export default function EmergencyDashboard() {
 
         <EmergencyStatusCard
           title="Location"
-          status={workflow.location}
+          status={locationStatus}
         />
 
         <div className="space-y-3">
           <EmergencyStatusCard
             title="Calling"
-            status={workflow.call}
+            status={callStatus}
           />
 
-          <CallHandler />
+          {/* Temporarily keep CallHandler commented */}
+          {/* <CallHandler /> */}
         </div>
 
         <EmergencyStatusCard
           title="SMS"
-          status={workflow.sms}
+          status={smsStatus}
         />
 
         <EmergencyStatusCard
           title="SOS Log"
-          status={workflow.log}
+          status={logStatus}
         />
 
         <StopSOSDialog />

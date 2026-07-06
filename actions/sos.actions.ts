@@ -11,6 +11,9 @@ interface StartEmergencyInput {
   latitude?: number;
   longitude?: number;
 }
+console.log("Using buildEmergencyMessage from lib/emergency-message");
+
+
 
 export async function startEmergency({
   latitude,
@@ -84,6 +87,10 @@ export async function startEmergency({
       locationUrl
     );
 
+
+    console.log("Generated message:");
+console.log(message);
+console.log("Message length:", message.length);    
     // ==========================
     // Send SMS
     // ==========================
@@ -95,17 +102,28 @@ export async function startEmergency({
     for (const contact of user.contacts) {
       try {
         // Convert Indian number to E.164 if needed
-        const phone =
-          contact.phone.startsWith("+")
-            ? contact.phone
-            : `+91${contact.phone}`;
+       const phone = contact.phone;
+              
+      console.log({
+      from: process.env.TWILIO_PHONE,
+      to: phone,
+      body: message,
+    });
+console.log("========== SENDING SMS ==========");
+console.log("From:", process.env.TWILIO_PHONE);
+console.log("To:", phone);
+console.log("Body:", message);
 
-        const response = await twilio.messages.create({
-          body: message,
-          from: process.env.TWILIO_PHONE!,
-          to: phone,
-        });
+const response = await twilio.messages.create({
+  body: message,
+  from: process.env.TWILIO_PHONE!,
+  to: phone,
+});
 
+console.log("SMS SUCCESS");
+console.log("SID:", response.sid);
+console.log("STATUS:", response.status);
+console.log("===============================");
         successCount++;
 
         smsResults.push({
@@ -121,10 +139,7 @@ export async function startEmergency({
           error
         );
 
-        const phone =
-          contact.phone.startsWith("+")
-            ? contact.phone
-            : `+91${contact.phone}`;
+       const phone = contact.phone;
 
         smsResults.push({
           contactId: contact.id,
@@ -145,7 +160,7 @@ export async function startEmergency({
       },
       data: {
         status:
-          successCount === user.contacts.length
+          successCount > 0
             ? "SENT"
             : "FAILED",
         message,
@@ -175,3 +190,4 @@ export async function startEmergency({
     };
   }
 }
+

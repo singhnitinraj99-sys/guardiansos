@@ -3,8 +3,11 @@ import { z } from "zod";
 
 export const ContactSchema = z.object({
   name: z.string().min(2),
+
   relation: z.nativeEnum(RelationType),
+
   phone: z
     .string()
-    .regex(/^[6-9]\d{9}$/, "Invalid phone number"),
+    .min(1, "Phone number is required")
+    .regex(/^\+[1-9]\d{7,14}$/, "Enter a valid phone number"),
 });

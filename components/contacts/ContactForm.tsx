@@ -11,6 +11,11 @@ import {
   createContact,
   updateContact,
 } from "@/actions/contact.actions";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+import { Controller } from "react-hook-form";
+
+
 type FormValues = z.infer<typeof ContactSchema>;
 
 interface ContactFormProps {
@@ -72,11 +77,21 @@ export default function ContactForm({ onSuccess, initialValues, contactId }: Con
         className="w-full border rounded-md p-2"
       />
 
-      <input
-        placeholder="Phone Number"
-        {...form.register("phone")}
-        className="w-full border rounded-md p-2"
-      />
+      <Controller
+  control={form.control}
+  name="phone"
+  render={({ field }) => (
+    <PhoneInput
+      international
+      defaultCountry="IN"
+      placeholder="Enter phone number"
+      value={field.value}
+      onChange={(value) => field.onChange(value ?? "")}
+      className="w-full rounded-md border p-2"
+    />
+  )}
+/>
+
 
       <select
         {...form.register("relation")}

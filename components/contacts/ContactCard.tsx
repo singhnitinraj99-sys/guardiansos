@@ -25,7 +25,7 @@ export default function ContactCard({ contact }: Props) {
 
           <p className="text-muted-foreground">{contact.phone}</p>
 
-          <Badge variant="secondary" className="mt-2">
+          <Badge variant="secondary" className="mt-2 bg-gray-200 text-gray-950">
             <Icon className="mr-1 h-3 w-3" />
             {relation.label}
           </Badge>

@@ -61,18 +61,18 @@ export function SOSProvider({
   const [location, setLocation] =
     useState<LocationData | null>(null);
 
-  const [locationStatus, setLocationStatus] =
-    useState<EmergencyStatus>("idle");
+const [locationStatus, setLocationStatus] =
+  useState<EmergencyStatus>("idle");
 
-  const [callStatus, setCallStatus] =
-    useState<EmergencyStatus>("idle");
+const [callStatus, setCallStatus] =
+  useState<EmergencyStatus>("idle");
 
-  const [smsStatus, setSmsStatus] =
-    useState<EmergencyStatus>("idle");
+const [smsStatus, setSmsStatus] =
+  useState<EmergencyStatus>("idle");
 
-  const [logStatus, setLogStatus] =
-    useState<EmergencyStatus>("idle");
-
+const [logStatus, setLogStatus] =
+  useState<EmergencyStatus>("idle");
+  
   const startSOS = useCallback(() => {
     if (state !== "IDLE") return;
 
