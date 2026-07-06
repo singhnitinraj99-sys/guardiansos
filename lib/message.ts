@@ -2,20 +2,8 @@ export function buildEmergencyMessage(
   userName: string,
   locationUrl?: string
 ) {
-  let message = `🚨 EMERGENCY ALERT
+  return `SOS
+It's an emergency! ${userName} needs help.
 
-${userName} may need immediate help.
-
-`;
-
-  if (locationUrl) {
-    message += `Location:
-${locationUrl}
-
-`;
-  }
-
-  message += "Sent via GuardianSOS.";
-
-  return message;
+${locationUrl ?? ""}`;
 }

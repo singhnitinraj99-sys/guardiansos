@@ -91,8 +91,6 @@ const [logStatus, setLogStatus] =
   }, []);
 
   const continueSOS = useCallback(() => {
-    console.log("GuardianSOS Activated");
-
     setState("ACTIVE");
 
     toast.success("GuardianSOS Activated");

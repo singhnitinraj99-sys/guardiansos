@@ -29,15 +29,9 @@ export function useCountdown({
     if (!active) return;
 
     if (count === 0 && !completed.current) {
-      console.log("Countdown reached 0");
-
-completed.current = true;
-
-console.log("Calling onComplete");
+      completed.current = true;
 
 onComplete();
-
-console.log("onComplete returned");
       return;
     }
 
