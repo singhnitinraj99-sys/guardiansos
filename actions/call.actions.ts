@@ -1,10 +1,9 @@
-
 "use server";
 
 import { currentUser } from "@clerk/nextjs/server";
 
 import { prisma } from "@/lib/prisma";
-import { twilio } from "@/lib/twilio";
+import { createEmergencyCall } from "@/lib/create-emergency-call";
 
 interface CallResult {
   success: boolean;
@@ -35,40 +34,14 @@ export async function startEmergencyCall(
     if (!user) {
       throw new Error("User not found");
     }
-   
-   
-   
-      const call = await twilio.calls.create({
-  to: phone,
-  from: process.env.TWILIO_PHONE!,
-  url: `${process.env.NEXT_PUBLIC_APP_URL}/api/twilio/voice`,
 
-  statusCallback: `${process.env.NEXT_PUBLIC_APP_URL}/api/twilio/status`,
-  statusCallbackMethod: "POST",
-  statusCallbackEvent: [
-    "initiated",
-    "ringing",
-    "answered",
-    "completed",
-      "busy",
-       "failed",
-     "no-answer",
-
-  ],
-});
-
-
-   await prisma.emergencyCallLog.create({
-  data: {
-    callSid: call.sid,
-    phone,
-    contactId,
-    contactName,
-    status: "QUEUED",
-    attempt,
-    userId: user.id,
-  },
-});
+    const call = await createEmergencyCall({
+      userId: user.id,
+      phone,
+      contactId,
+      contactName,
+      attempt,
+    });
 
     return {
       success: true,
@@ -87,4 +60,3 @@ export async function startEmergencyCall(
     };
   }
 }
-

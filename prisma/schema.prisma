@@ -114,18 +114,18 @@ model EmergencyCallLog {
 
   attempt     Int        @default(1)
 
+  retryStarted Boolean   @default(false)
+
   createdAt   DateTime   @default(now())
 
   updatedAt   DateTime   @updatedAt
 
-  userId       String
+  userId String
 
-  user         User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
-
   @@index([callSid])
-
   @@index([contactId])
 }
 
