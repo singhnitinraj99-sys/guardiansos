@@ -36,14 +36,7 @@ export async function startEmergencyCall(
       throw new Error("User not found");
     }
    
-    console.log("=== STARTING TWILIO CALL ===");
-console.log({
-  phone,
-  contactId,
-  contactName,
-  from: process.env.TWILIO_PHONE,
-  voiceUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/twilio/voice`,
-});
+   
    
       const call = await twilio.calls.create({
   to: phone,
