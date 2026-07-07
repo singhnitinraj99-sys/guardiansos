@@ -34,11 +34,12 @@ model User {
 
   contacts  EmergencyContact[]
 
-  logs      SOSLog[]
+  logs       SOSLog[]
 
-  settings  UserSettings?
+  callLogs   EmergencyCallLog[]
+
+  settings   UserSettings?
 }
-
 model EmergencyContact {
   id         String   @id @default(cuid())
 
@@ -47,6 +48,8 @@ model EmergencyContact {
   phone      String
 
   relation   RelationType
+
+  priority   Int      @default(5)
 
   isPrimary  Boolean  @default(false)
 
@@ -61,8 +64,7 @@ model EmergencyContact {
   @@index([userId])
 
   @@unique([userId, phone])
-}  
-
+}
 
 enum SOSStatus {
   PENDING
@@ -81,6 +83,50 @@ model SOSLog {
 
   userId String
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum CallStatus {
+  QUEUED
+  INITIATED
+  RINGING
+  IN_PROGRESS
+  COMPLETED
+  BUSY
+  NO_ANSWER
+  FAILED
+  CANCELED
+}
+
+model EmergencyCallLog {
+  id          String     @id @default(cuid())
+
+  callSid     String     @unique
+
+  phone       String
+
+  contactId   String
+
+  contactName String
+
+  status      CallStatus
+
+  duration    Int?
+
+  attempt     Int        @default(1)
+
+  createdAt   DateTime   @default(now())
+
+  updatedAt   DateTime   @updatedAt
+
+  userId       String
+
+  user         User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+
+  @@index([callSid])
+
+  @@index([contactId])
 }
 
 model UserSettings {

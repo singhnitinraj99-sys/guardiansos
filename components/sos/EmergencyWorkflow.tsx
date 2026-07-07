@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 
 import { getCurrentLocation } from "@/lib/geolocation";
 import { startEmergency } from "@/actions/sos.actions";
+import { startEmergencyCallWorkflow } from "@/actions/emergency-call-workflow.actions";
 
 import { useSOS } from "./SOSProvider";
 
@@ -56,7 +57,7 @@ export default function EmergencyWorkflow() {
       }
 
       // -----------------------------
-      // STEP 2 : SOS + SMS
+      // STEP 2 : SOS LOG + SMS
       // -----------------------------
       try {
         setLogStatus("loading");
@@ -91,22 +92,33 @@ export default function EmergencyWorkflow() {
       }
 
       // -----------------------------
-      // STEP 3 : CALL (Next Phase)
+      // STEP 3 : VOICE CALL
       // -----------------------------
-      setCallStatus("idle");
+      try {
+        setCallStatus("loading");
 
-      running.current = false;
+        const result = await startEmergencyCallWorkflow();
+
+        if (result.success) {
+          const hasSuccessfulCall = (result.results ?? []).some(
+            (call) => call.success
+          );
+
+          if (hasSuccessfulCall) {
+            setCallStatus("completed");
+          } else {
+            setCallStatus("failed");
+          }
+        } else {
+          setCallStatus("failed");
+        }
+      } catch (error) {
+        console.error("Voice Call Error:", error);
+
+        setCallStatus("failed");
+      }
     }
 
-    executeWorkflow();
-  }, [
-    alarmActive,
-    setLocation,
-    setLocationStatus,
-    setLogStatus,
-    setSmsStatus,
-    setCallStatus,
-  ]);
-
-  return null;
+    void executeWorkflow();
+  }, [alarmActive]);
 }

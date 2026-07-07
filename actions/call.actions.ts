@@ -1,17 +1,84 @@
+
 "use server";
 
+import { currentUser } from "@clerk/nextjs/server";
+
+import { prisma } from "@/lib/prisma";
 import { twilio } from "@/lib/twilio";
-import { getPrimaryEmergencyContact } from "@/lib/emergency-contact";
 
-export async function startEmergencyCall() {
+interface CallResult {
+  success: boolean;
+  sid?: string;
+  status?: string;
+  message?: string;
+}
+
+export async function startEmergencyCall(
+  phone: string,
+  contactId: string,
+  contactName: string,
+  attempt = 1
+): Promise<CallResult> {
   try {
-    const { contact } = await getPrimaryEmergencyContact();
+    const clerkUser = await currentUser();
 
-    const call = await twilio.calls.create({
-      to: contact.phone,
-      from: process.env.TWILIO_PHONE!,
-      url: `${process.env.NEXT_PUBLIC_APP_URL}/api/twilio/voice`,
+    if (!clerkUser) {
+      throw new Error("Unauthorized");
+    }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        clerkId: clerkUser.id,
+      },
     });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+   
+    console.log("=== STARTING TWILIO CALL ===");
+console.log({
+  phone,
+  contactId,
+  contactName,
+  from: process.env.TWILIO_PHONE,
+  voiceUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/twilio/voice`,
+});
+   
+      const call = await twilio.calls.create({
+  to: phone,
+  from: process.env.TWILIO_PHONE!,
+  url: `${process.env.NEXT_PUBLIC_APP_URL}/api/twilio/voice`,
+
+  statusCallback: `${process.env.NEXT_PUBLIC_APP_URL}/api/twilio/status`,
+  statusCallbackMethod: "POST",
+  statusCallbackEvent: [
+    "initiated",
+    "ringing",
+    "answered",
+    "completed",
+      "busy",
+       "failed",
+     "no-answer",
+
+  ],
+});
+
+console.log("=== TWILIO CALL CREATED ===");
+console.log(call.sid);
+console.log(call.status);
+
+   await prisma.emergencyCallLog.create({
+  data: {
+    callSid: call.sid,
+    phone,
+    contactId,
+    contactName,
+    status: "QUEUED",
+    attempt,
+    userId: user.id,
+  },
+});
 
     return {
       success: true,
@@ -30,3 +97,4 @@ export async function startEmergencyCall() {
     };
   }
 }
+
