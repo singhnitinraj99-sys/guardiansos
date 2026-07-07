@@ -57,9 +57,6 @@ export async function startEmergencyCall(
   ],
 });
 
-console.log("=== TWILIO CALL CREATED ===");
-console.log(call.sid);
-console.log(call.status);
 
    await prisma.emergencyCallLog.create({
   data: {

@@ -51,6 +51,11 @@ export async function retryEmergencyCall(
   }
 
   
-  const phone = nextContact.phone;
-  await startEmergencyCall(phone, nextContact.name);
+ const phone = nextContact.phone;
+
+await startEmergencyCall(
+  phone,
+  nextContact.id,
+  nextContact.name
+);
 }

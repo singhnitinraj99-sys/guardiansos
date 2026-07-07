@@ -121,4 +121,5 @@ export default function EmergencyWorkflow() {
 
     void executeWorkflow();
   }, [alarmActive]);
+  return null;
 }
