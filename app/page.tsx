@@ -1,23 +1,26 @@
-import Link from "next/link";
+ import HowItWorks from "@/components/landing/HowItWorks";
+import WhyGuardian from "@/components/landing/WhyGuardian";
+import FAQ from "@/components/landing/FAQ";
+ import Footer from "@/components/landing/Footer";
+import Navbar from "@/components/landing/Navbar";
+import Hero from "@/components/landing/Hero";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+export default async function Home() {
+   const { userId } = await auth();
 
-export default function Home() {
+  if (userId) {
+    redirect("/dashboard");
+  }
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-4">
-      <h1 className="text-5xl font-bold text-red-600">
-        GuardianSOS
-      </h1>
-
-      <p>Your Emergency Companion</p>
-
-      <div className="flex gap-4">
-        <Link href="/sign-in">
-          Login
-        </Link>
-
-        <Link href="/sign-up">
-          Signup
-        </Link>
-      </div>
-    </main>
+    <>
+      <Navbar />
+      <Hero />
+      <WhyGuardian />
+     <HowItWorks />
+      <FAQ />
+    
+      <Footer /> 
+    </>
   );
 }
