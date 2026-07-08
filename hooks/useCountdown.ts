@@ -26,24 +26,22 @@ export function useCountdown({
   }, [active, seconds]);
 
   useEffect(() => {
-    if (!active) return;
+  if (!active) return;
 
-    if (count === 0 && !completed.current) {
-      completed.current = true;
+  if (count === 0 && !completed.current) {
+    completed.current = true;
+    onComplete();
+    return;
+  }
 
-onComplete();
-      return;
-    }
+  if (count <= 0) return;
 
-    if (count <= 0) return;
+  const timer = setTimeout(() => {
+    setCount((c) => c - 1);
+  }, 1000);
 
-    const timer = setTimeout(() => {
-      setCount((c) => c - 1);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-
-  }, [count, active]);
+  return () => clearTimeout(timer);
+}, [count, active, onComplete]);
 
   return count;
 }

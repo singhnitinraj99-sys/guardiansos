@@ -74,6 +74,7 @@ const [logStatus, setLogStatus] =
   useState<EmergencyStatus>("idle");
   
   const startSOS = useCallback(() => {
+    
     if (state !== "IDLE") return;
 
     setState("COUNTDOWN");
@@ -91,6 +92,8 @@ const [logStatus, setLogStatus] =
   }, []);
 
   const continueSOS = useCallback(() => {
+   console.log("continueSOS called");
+
     setState("ACTIVE");
 
     toast.success("GuardianSOS Activated");
@@ -108,6 +111,8 @@ const [logStatus, setLogStatus] =
 
     toast.success("GuardianSOS Stopped");
   }, []);
+
+
 
   return (
     <SOSContext.Provider

@@ -83,6 +83,10 @@ model SOSLog {
 
   userId String
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  calls EmergencyCallLog[]
+
+  @@index([userId])
 }
 
 enum CallStatus {
@@ -99,34 +103,29 @@ enum CallStatus {
 
 model EmergencyCallLog {
   id          String     @id @default(cuid())
-
   callSid     String     @unique
-
   phone       String
-
   contactId   String
-
   contactName String
-
   status      CallStatus
-
   duration    Int?
-
   attempt     Int        @default(1)
 
   retryStarted Boolean   @default(false)
 
   createdAt   DateTime   @default(now())
-
   updatedAt   DateTime   @updatedAt
 
   userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sosLogId String
+  sosLog   SOSLog @relation(fields: [sosLogId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([callSid])
   @@index([contactId])
+  @@index([sosLogId])
 }
 
 model UserSettings {

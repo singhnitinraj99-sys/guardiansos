@@ -7,6 +7,8 @@ import { Users, ShieldAlert, Settings } from "lucide-react";
 import { getDashboardData } from "@/actions/dashboard.actions";
 import { syncUser } from "@/actions/user.actions";
 import ShakeListener from "@/components/sos/ShakeListener";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import InstallPWA from "@/components/pwa/InstallPWA";
 
 export default async function DashboardPage() {
   await syncUser();
@@ -17,6 +19,21 @@ export default async function DashboardPage() {
       <WelcomeCard />
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+       
+        <Card>
+    <CardHeader>
+        <CardTitle>
+            Install App
+        </CardTitle>
+    </CardHeader>
+
+    <CardContent>
+
+        <InstallPWA />
+
+    </CardContent>
+</Card>
+
         <DashboardCard
           title="Emergency Contacts"
           value={`${user?.contacts.length ?? 0}/5`}
@@ -39,6 +56,9 @@ export default async function DashboardPage() {
         />
 
         <ShakeListener threshold={12} />
+
+       
+
       </div>
     </div>
   );

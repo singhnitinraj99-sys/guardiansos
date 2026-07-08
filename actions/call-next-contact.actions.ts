@@ -54,19 +54,20 @@ export async function callNextContact(callSid: string) {
     console.log(nextContact.name);
     console.log(phone);
 
-    const call = await createEmergencyCall({
-      userId: currentCall.userId,
-      phone,
-      contactId: nextContact.id,
-      contactName: nextContact.name,
-      attempt: currentCall.attempt + 1,
-    });
+   const call = await createEmergencyCall({
+  userId: currentCall.userId,
+  phone,
+  contactId: nextContact.id,
+  contactName: nextContact.name,
+  attempt: currentCall.attempt + 1,
+  sosLogId: currentCall.sosLogId,
+});
 
     console.log("================================");
 console.log("Calling:", nextContact.name);
 console.log("Phone:", phone);
 console.log("Attempt:", currentCall.attempt + 1);
-console.log("Call SID:", call.sid);
+console.log("Current Call SID:", call.sid);
 console.log("================================");
  
           if (!nextContact) {

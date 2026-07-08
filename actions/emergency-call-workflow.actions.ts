@@ -6,7 +6,7 @@ import { startEmergencyCall } from "@/actions/call.actions";
 import { getEmergencyContacts } from '@/lib/emergency-contact';
 
 
-export async function startEmergencyCallWorkflow() {
+export async function startEmergencyCallWorkflow(sosLogId: string) {
   try {
     console.log("=== VOICE WORKFLOW START ===");
 
@@ -22,7 +22,8 @@ export async function startEmergencyCallWorkflow() {
       const result = await startEmergencyCall(
         contact.phone,
         contact.id,
-        contact.name
+        contact.name,
+        sosLogId
       );
 
       console.log("Call result:", result);

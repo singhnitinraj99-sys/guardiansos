@@ -11,35 +11,35 @@ import { useSOS } from "./SOSProvider";
 export default function EmergencyWorkflow() {
   const {
     alarmActive,
-
     setLocation,
-
     setLocationStatus,
-
     setLogStatus,
-
     setSmsStatus,
-
     setCallStatus,
   } = useSOS();
 
   const running = useRef(false);
 
   useEffect(() => {
-    if (!alarmActive) return;
+   
+    if (!alarmActive) {
+      running.current = false;
+      return;
+    }
 
     if (running.current) return;
 
     running.current = true;
 
+   
     async function executeWorkflow() {
       let latitude: number | undefined;
       let longitude: number | undefined;
 
-      // -----------------------------
-      // STEP 1 : LOCATION
-      // -----------------------------
+      // STEP 1
       try {
+        console.log("STEP 1 - Getting location");
+
         setLocationStatus("loading");
 
         const location = await getCurrentLocation();
@@ -50,16 +50,20 @@ export default function EmergencyWorkflow() {
         setLocation(location);
 
         setLocationStatus("completed");
+
+        console.log("Location Success");
       } catch (error) {
         console.error("Location Error:", error);
 
         setLocationStatus("failed");
       }
 
-      // -----------------------------
-      // STEP 2 : SOS LOG + SMS
-      // -----------------------------
+      // STEP 2
+      let sosLogId: string | undefined;
+
       try {
+        console.log("STEP 2 - Sending SOS");
+
         setLogStatus("loading");
         setSmsStatus("loading");
 
@@ -68,14 +72,13 @@ export default function EmergencyWorkflow() {
           longitude,
         });
 
+
         if (result.success) {
+          sosLogId = result.logId;
+
           setLogStatus("completed");
 
-          if (
-            "smsSent" in result &&
-            typeof result.smsSent === "number" &&
-            result.smsSent > 0
-          ) {
+          if ((result.smsSent ?? 0) > 0) {
             setSmsStatus("completed");
           } else {
             setSmsStatus("failed");
@@ -91,35 +94,47 @@ export default function EmergencyWorkflow() {
         setSmsStatus("failed");
       }
 
-      // -----------------------------
-      // STEP 3 : VOICE CALL
-      // -----------------------------
-      try {
-        setCallStatus("loading");
+      // STEP 3
+      if (sosLogId) {
+        try {
 
-        const result = await startEmergencyCallWorkflow();
 
-        if (result.success) {
-          const hasSuccessfulCall = (result.results ?? []).some(
-            (call) => call.success
-          );
+          setCallStatus("loading");
 
-          if (hasSuccessfulCall) {
-            setCallStatus("completed");
+          const result = await startEmergencyCallWorkflow(sosLogId);
+
+         
+
+          if (result.success) {
+            const hasSuccessfulCall =
+              (result.results ?? []).some((call) => call.success);
+
+            setCallStatus(
+              hasSuccessfulCall ? "completed" : "failed"
+            );
           } else {
             setCallStatus("failed");
           }
-        } else {
+        } catch (error) {
+          console.error("Voice Call Error:", error);
+
           setCallStatus("failed");
         }
-      } catch (error) {
-        console.error("Voice Call Error:", error);
-
-        setCallStatus("failed");
       }
+
+      running.current = false;
     }
 
-    void executeWorkflow();
-  }, [alarmActive]);
+    executeWorkflow();
+
+  }, [
+    alarmActive,
+    setLocation,
+    setLocationStatus,
+    setLogStatus,
+    setSmsStatus,
+    setCallStatus,
+  ]);
+
   return null;
 }

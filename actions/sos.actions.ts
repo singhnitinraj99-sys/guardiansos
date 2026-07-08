@@ -12,8 +12,6 @@ interface StartEmergencyInput {
   longitude?: number;
 }
 
-
-
 export async function startEmergency({
   latitude,
   longitude,
@@ -55,25 +53,11 @@ export async function startEmergency({
     }
 
     // ==========================
-    // Create SOS Log
-    // ==========================
-
-    const log = await prisma.sOSLog.create({
-      data: {
-        latitude,
-        longitude,
-        status: "PENDING",
-        userId: user.id,
-      },
-    });
-
-    // ==========================
     // Google Maps URL
     // ==========================
 
     const locationUrl =
-      latitude !== undefined &&
-      longitude !== undefined
+      latitude !== undefined && longitude !== undefined
         ? createGoogleMapsLink(latitude, longitude)
         : undefined;
 
@@ -86,25 +70,31 @@ export async function startEmergency({
       locationUrl
     );
 
-
     // ==========================
     // Send SMS
     // ==========================
 
-    const smsResults = [];
+    const smsResults: {
+      contactId: string;
+      name: string;
+      phone: string;
+      success: boolean;
+      sid?: string;
+    }[] = [];
 
     let successCount = 0;
 
     for (const contact of user.contacts) {
       try {
-        // Convert Indian number to E.164 if needed
-       const phone = contact.phone;
-              
-const response = await twilio.messages.create({
-  body: message,
-  from: process.env.TWILIO_PHONE!,
-  to: phone,
-});
+        const phone = contact.phone.startsWith("+")
+          ? contact.phone
+          : `+91${contact.phone}`;
+
+        const response = await twilio.messages.create({
+          body: message,
+          from: process.env.TWILIO_PHONE!,
+          to: phone,
+        });
 
         successCount++;
 
@@ -116,12 +106,11 @@ const response = await twilio.messages.create({
           sid: response.sid,
         });
       } catch (error) {
-        console.error(
-          `SMS failed for ${contact.name}`,
-          error
-        );
+        console.error(`SMS failed for ${contact.name}`, error);
 
-       const phone = contact.phone;
+        const phone = contact.phone.startsWith("+")
+          ? contact.phone
+          : `+91${contact.phone}`;
 
         smsResults.push({
           contactId: contact.id,
@@ -133,19 +122,16 @@ const response = await twilio.messages.create({
     }
 
     // ==========================
-    // Update SOS Log
+    // Create SOS Log
     // ==========================
 
-    await prisma.sOSLog.update({
-      where: {
-        id: log.id,
-      },
+    const log = await prisma.sOSLog.create({
       data: {
-        status:
-          successCount > 0
-            ? "SENT"
-            : "FAILED",
+        latitude,
+        longitude,
         message,
+        status: successCount > 0 ? "SENT" : "FAILED",
+        userId: user.id,
       },
     });
 
@@ -172,4 +158,3 @@ const response = await twilio.messages.create({
     };
   }
 }
-

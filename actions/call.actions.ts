@@ -16,6 +16,7 @@ export async function startEmergencyCall(
   phone: string,
   contactId: string,
   contactName: string,
+  sosLogId: string,
   attempt = 1
 ): Promise<CallResult> {
   try {
@@ -40,6 +41,7 @@ export async function startEmergencyCall(
       phone,
       contactId,
       contactName,
+      sosLogId,
       attempt,
     });
 

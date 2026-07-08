@@ -60,50 +60,34 @@ export async function POST(req: Request) {
     // Retry next contact only once
     // -----------------------------
     if (RETRY_STATUSES.has(callStatus)) {
-      const retryCall = await prisma.$transaction(async (tx) => {
-        const latest = await tx.emergencyCallLog.findUnique({
-          where: {
-            callSid,
-          },
-        });
+     const updateResult = await prisma.emergencyCallLog.updateMany({
+  where: {
+    callSid,
+    retryStarted: false,
+  },
+  data: {
+    retryStarted: true,
+  },
+});
 
-        if (!latest) {
-          return null;
-        }
-
-        // Retry already started
-        if (latest.retryStarted) {
-          return null;
-        }
-
-        await tx.emergencyCallLog.update({
-          where: {
-            callSid,
-          },
-          data: {
-            retryStarted: true,
-          },
-        });
-
-        return latest;
-      });
-
-      if (retryCall) {
-        console.log("Retrying next emergency contact...");
-        await callNextContact(callSid);
-      } else {
-        console.log("Retry already processed.");
-      }
+if (updateResult.count === 1) {
+  console.log("Retrying next emergency contact...");
+  await callNextContact(callSid);
+} else {
+  console.log("Retry already processed.");
+}
     }
+console.log("====================================");
 
-    console.log("====================================");
+return new Response("OK");     
 
-    return new Response("OK");
   } catch (error) {
-    console.error("TWILIO CALLBACK ERROR:", error);
-
+    console.error("Error processing Twilio callback:", error);
     return new Response("Internal Server Error", {
       status: 500,
     });
-  }
+  }     
 }
+
+
+
