@@ -1,3 +1,4 @@
+
 import EmptyHistory from "./EmptyHistory";
 import HistoryCard from "./HistoryCard";
 
@@ -13,7 +14,9 @@ export default function HistoryList({
   }
 
   return (
+    
     <div className="grid gap-6">
+    
       {history.map((incident) => (
         <HistoryCard
           key={incident.id}

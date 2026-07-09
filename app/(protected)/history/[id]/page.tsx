@@ -4,6 +4,8 @@ import SummaryCard from "@/components/history/details/SummaryCard";
 import LocationCard from "@/components/history/details/LocationCard";
 import SMSCard from "@/components/history/details/SMSCard";
 import CallTimeline from "@/components/history/details/CallTimeline";
+import PageHeader from "@/components/shared/PageHeader";
+import TrackingSummary from "@/components/history/details/TrackingSummary";
 
 interface Props {
   params: Promise<{
@@ -20,18 +22,35 @@ export default async function IncidentPage({
 
   return (
     <main className="mx-auto max-w-6xl space-y-6 p-6">
-      <div>
-        <h1 className="text-3xl font-bold">
-          🚨 Emergency Incident
-        </h1>
+      <PageHeader
+  title="Emergency Incident"
+  description={new Date(incident.createdAt).toLocaleString()}
+/>
+          
+          <CallTimeline calls={incident.calls} />
 
-        <p className="text-muted-foreground mt-2">
-          {new Date(
-            incident.createdAt
-          ).toLocaleString()}
-        </p>
-      </div>
+<section className="space-y-4">
+  <h2 className="text-2xl font-bold">
+    📍 Live Tracking Route
+  </h2>
 
+  {/* <RouteMap
+    points={incident.locations}
+  /> */}
+
+  <TrackingSummary
+  incidentId={incident.id}
+  points={incident.locations.length}
+  startedAt={incident.createdAt}
+  lastUpdated={
+    incident.locations.length
+      ? incident.locations[
+          incident.locations.length - 1
+        ].createdAt
+      : undefined
+  }
+/>
+</section>
       <SummaryCard incident={incident} />
 
       <LocationCard incident={incident} />

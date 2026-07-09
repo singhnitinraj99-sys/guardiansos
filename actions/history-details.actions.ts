@@ -31,6 +31,12 @@ export async function getEmergencyDetails(id: string) {
           createdAt: "asc",
         },
       },
+
+      locations: {
+        orderBy: {
+          createdAt: "asc",
+        },
+      },
     },
   });
 

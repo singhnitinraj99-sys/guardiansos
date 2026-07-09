@@ -51,7 +51,7 @@ export default function SOSEngine({
     startSOS();
   }}
 >
-  Test SOS
+  Trigger SOS
 </Button>
    <StopSOSButton />
     </>

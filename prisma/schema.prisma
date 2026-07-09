@@ -86,6 +86,8 @@ model SOSLog {
 
   calls EmergencyCallLog[]
 
+  liveLocations LiveLocation[]
+
   @@index([userId])
 }
 
@@ -126,6 +128,26 @@ model EmergencyCallLog {
   @@index([callSid])
   @@index([contactId])
   @@index([sosLogId])
+}
+
+model LiveLocation {
+  id        String   @id @default(cuid())
+
+  latitude  Float
+  longitude Float
+
+  accuracy  Float?
+
+  speed     Float?
+  heading   Float?
+
+  createdAt DateTime @default(now())
+
+  sosLogId String
+  sosLog   SOSLog @relation(fields: [sosLogId], references: [id], onDelete: Cascade)
+
+  @@index([sosLogId])
+  @@index([createdAt])
 }
 
 model UserSettings {

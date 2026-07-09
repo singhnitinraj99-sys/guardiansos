@@ -2,17 +2,20 @@ import { getContacts } from "@/actions/contact.actions";
 import AddContactDialog from "@/components/contacts/AddContactDialog";
 import ContactList from "@/components/contacts/ContactList";
 import EmptyState from "@/components/contacts/EmptyState";
+import PageHeader from "@/components/shared/PageHeader";
 
 export default async function ContactsPage() {
   const contacts = await getContacts();
 
   return (
     <div className="space-y-8">
+       
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Emergency Contacts</h1>
-          <p className="text-muted-foreground">Manage trusted contacts for your safety alerts.</p>
-        </div>
+        <PageHeader
+                title="Emergency Contacts"
+                description="Manage trusted contacts for your safety alerts."
+              />
+        
 
         <AddContactDialog />
       </div>

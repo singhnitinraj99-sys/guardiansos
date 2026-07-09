@@ -2,10 +2,11 @@
 
 import { useAlarm } from "@/hooks/useAlarm";
 import { useVibration } from "@/hooks/useVibration";
-
+import LiveTracking from "./LiveTracking";
 import FlashScreen from "./FlashScreen";
 import EmergencyDashboard from "./EmergencyDashboard";
 import EmergencyWorkflow from "./EmergencyWorkflow";
+import { useSOS } from "./SOSProvider";
 
 interface Props {
   active: boolean;
@@ -28,6 +29,10 @@ export default function EmergencyEffects({
     enabled: vibrationEnabled,
   });
 
+  const {
+    alarmActive,
+    currentSOSLogId,
+} = useSOS();
   return (
     <>
       <FlashScreen active={active} />
@@ -35,6 +40,10 @@ export default function EmergencyEffects({
       <EmergencyDashboard />
 
       <EmergencyWorkflow />
+
+      {alarmActive && currentSOSLogId && (
+    <LiveTracking sosLogId={currentSOSLogId} />
+)}
     </>
   );
 }

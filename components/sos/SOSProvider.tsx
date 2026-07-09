@@ -15,10 +15,7 @@ import { toast } from "sonner";
 import { EmergencyStatus } from "@/types/emergency";
 import { LocationData } from "@/types/location";
 
-export type SOSState =
-  | "IDLE"
-  | "COUNTDOWN"
-  | "ACTIVE";
+export type SOSState = "IDLE" | "COUNTDOWN" | "ACTIVE";
 
 interface SOSContextType {
   state: SOSState;
@@ -32,6 +29,10 @@ interface SOSContextType {
 
   locationStatus: EmergencyStatus;
   setLocationStatus: Dispatch<SetStateAction<EmergencyStatus>>;
+
+  currentSOSLogId: string | null;
+
+  setCurrentSOSLogId: React.Dispatch<React.SetStateAction<string | null>>;
 
   callStatus: EmergencyStatus;
   setCallStatus: Dispatch<SetStateAction<EmergencyStatus>>;
@@ -49,32 +50,22 @@ interface SOSContextType {
 }
 
 const SOSContext = createContext<SOSContextType | null>(null);
+export function SOSProvider({ children }: { children: ReactNode }) {
+  const [currentSOSLogId, setCurrentSOSLogId] = useState<string | null>(null);
 
-export function SOSProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  const [state, setState] =
-    useState<SOSState>("IDLE");
+  const [state, setState] = useState<SOSState>("IDLE");
 
-  const [location, setLocation] =
-    useState<LocationData | null>(null);
+  const [location, setLocation] = useState<LocationData | null>(null);
 
-const [locationStatus, setLocationStatus] =
-  useState<EmergencyStatus>("idle");
+  const [locationStatus, setLocationStatus] = useState<EmergencyStatus>("idle");
 
-const [callStatus, setCallStatus] =
-  useState<EmergencyStatus>("idle");
+  const [callStatus, setCallStatus] = useState<EmergencyStatus>("idle");
 
-const [smsStatus, setSmsStatus] =
-  useState<EmergencyStatus>("idle");
+  const [smsStatus, setSmsStatus] = useState<EmergencyStatus>("idle");
 
-const [logStatus, setLogStatus] =
-  useState<EmergencyStatus>("idle");
-  
+  const [logStatus, setLogStatus] = useState<EmergencyStatus>("idle");
+
   const startSOS = useCallback(() => {
-    
     if (state !== "IDLE") return;
 
     setState("COUNTDOWN");
@@ -89,10 +80,11 @@ const [logStatus, setLogStatus] =
     setCallStatus("idle");
     setSmsStatus("idle");
     setLogStatus("idle");
+    setCurrentSOSLogId(null);
   }, []);
 
   const continueSOS = useCallback(() => {
-   console.log("continueSOS called");
+    console.log("continueSOS called");
 
     setState("ACTIVE");
 
@@ -108,11 +100,9 @@ const [logStatus, setLogStatus] =
     setCallStatus("idle");
     setSmsStatus("idle");
     setLogStatus("idle");
-
+    setCurrentSOSLogId(null);
     toast.success("GuardianSOS Stopped");
   }, []);
-
-
 
   return (
     <SOSContext.Provider
@@ -138,6 +128,9 @@ const [logStatus, setLogStatus] =
         logStatus,
         setLogStatus,
 
+        currentSOSLogId,
+        setCurrentSOSLogId,
+
         startSOS,
         cancelSOS,
         continueSOS,
@@ -153,9 +146,7 @@ export function useSOS() {
   const context = useContext(SOSContext);
 
   if (!context) {
-    throw new Error(
-      "useSOS must be used inside SOSProvider"
-    );
+    throw new Error("useSOS must be used inside SOSProvider");
   }
 
   return context;

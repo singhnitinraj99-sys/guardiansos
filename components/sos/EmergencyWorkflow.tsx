@@ -5,18 +5,45 @@ import { useEffect, useRef } from "react";
 import { getCurrentLocation } from "@/lib/geolocation";
 import { startEmergency } from "@/actions/sos.actions";
 import { startEmergencyCallWorkflow } from "@/actions/emergency-call-workflow.actions";
-
+import { useLiveTracking } from "@/hooks/useLiveTracking";
+import { saveLiveLocation } from "@/actions/live-location.actions";
 import { useSOS } from "./SOSProvider";
 
 export default function EmergencyWorkflow() {
   const {
-    alarmActive,
-    setLocation,
-    setLocationStatus,
-    setLogStatus,
-    setSmsStatus,
-    setCallStatus,
+   alarmActive,
+  currentSOSLogId,
+  setCurrentSOSLogId,
+
+  setLocation,
+  setLocationStatus,
+  setLogStatus,
+  setSmsStatus,
+  setCallStatus,
   } = useSOS();
+
+  //live tracking hook to save the current location to the database
+useLiveTracking({
+  enabled: alarmActive && !!currentSOSLogId,
+
+  onLocation: async (position) => {
+    if (!currentSOSLogId) return;
+
+    await saveLiveLocation({
+      sosLogId: currentSOSLogId,
+
+      latitude: position.coords.latitude,
+
+      longitude: position.coords.longitude,
+
+      accuracy: position.coords.accuracy,
+
+      speed: position.coords.speed,
+
+      heading: position.coords.heading,
+    });
+  },
+});
 
   const running = useRef(false);
 
@@ -72,21 +99,22 @@ export default function EmergencyWorkflow() {
           longitude,
         });
 
+if (result.success && result.logId) {
+  sosLogId = result.logId;
 
-        if (result.success) {
-          sosLogId = result.logId;
+  setCurrentSOSLogId(result.logId);
 
-          setLogStatus("completed");
+  setLogStatus("completed");
 
-          if ((result.smsSent ?? 0) > 0) {
-            setSmsStatus("completed");
-          } else {
-            setSmsStatus("failed");
-          }
-        } else {
-          setLogStatus("failed");
-          setSmsStatus("failed");
-        }
+  if ((result.smsSent ?? 0) > 0) {
+    setSmsStatus("completed");
+  } else {
+    setSmsStatus("failed");
+  }
+} else {
+  setLogStatus("failed");
+  setSmsStatus("failed");
+}
       } catch (error) {
         console.error("Emergency Error:", error);
 
