@@ -17,8 +17,11 @@ import { LocationData } from "@/types/location";
 
 export type SOSState = "IDLE" | "COUNTDOWN" | "ACTIVE";
 
+export type SOSMode = "REAL" | "TEST";
+
 interface SOSContextType {
   state: SOSState;
+mode: SOSMode;
 
   open: boolean;
   isRunning: boolean;
@@ -43,7 +46,7 @@ interface SOSContextType {
   logStatus: EmergencyStatus;
   setLogStatus: Dispatch<SetStateAction<EmergencyStatus>>;
 
-  startSOS: () => void;
+  startSOS: (mode?: SOSMode) => void;
   cancelSOS: () => void;
   continueSOS: () => void;
   stopSOS: () => void;
@@ -55,6 +58,8 @@ export function SOSProvider({ children }: { children: ReactNode }) {
 
   const [state, setState] = useState<SOSState>("IDLE");
 
+  const [mode, setMode] = useState<SOSMode>("REAL");
+
   const [location, setLocation] = useState<LocationData | null>(null);
 
   const [locationStatus, setLocationStatus] = useState<EmergencyStatus>("idle");
@@ -65,17 +70,22 @@ export function SOSProvider({ children }: { children: ReactNode }) {
 
   const [logStatus, setLogStatus] = useState<EmergencyStatus>("idle");
 
-  const startSOS = useCallback(() => {
+  
+  const startSOS = useCallback(
+  (selectedMode: SOSMode = "REAL") => {
     if (state !== "IDLE") return;
 
+    setMode(selectedMode);
     setState("COUNTDOWN");
-  }, [state]);
+  },
+  [state]
+);
 
   const cancelSOS = useCallback(() => {
     setState("IDLE");
 
     setLocation(null);
-
+     setMode("REAL");
     setLocationStatus("idle");
     setCallStatus("idle");
     setSmsStatus("idle");
@@ -108,6 +118,7 @@ export function SOSProvider({ children }: { children: ReactNode }) {
     <SOSContext.Provider
       value={{
         state,
+           mode,
 
         open: state === "COUNTDOWN",
         isRunning: state === "ACTIVE",

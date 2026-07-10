@@ -22,13 +22,6 @@ export default function StopSOSDialog() {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button
-          variant="destructive"
-          size="lg"
-          className="w-full"
-        >
-          STOP SOS
-        </Button>
       </AlertDialogTrigger>
 
       <AlertDialogContent>

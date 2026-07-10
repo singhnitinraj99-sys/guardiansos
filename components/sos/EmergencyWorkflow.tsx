@@ -11,6 +11,7 @@ import { useSOS } from "./SOSProvider";
 
 export default function EmergencyWorkflow() {
   const {
+    mode,
    alarmActive,
   currentSOSLogId,
   setCurrentSOSLogId,
@@ -75,6 +76,8 @@ useLiveTracking({
         latitude = location.latitude;
         longitude = location.longitude;
 
+         let sosLogId: string | undefined;
+
         setLocation(location);
 
         setLocationStatus("completed");
@@ -85,6 +88,31 @@ useLiveTracking({
 
         setLocationStatus("failed");
       }
+
+
+// ==============================
+// TEST MODE
+// ==============================
+
+if (mode === "TEST") {
+  console.log("TEST MODE");
+
+  // simulate checking contacts
+  setLogStatus("completed");
+
+  // simulate SMS service
+  setSmsStatus("completed");
+
+  // small delay so UI looks natural
+  await new Promise((resolve) => setTimeout(resolve, 800));
+
+  // simulate call service
+  setCallStatus("completed");
+
+  running.current = false;
+
+  return;
+}
 
       // STEP 2
       let sosLogId: string | undefined;

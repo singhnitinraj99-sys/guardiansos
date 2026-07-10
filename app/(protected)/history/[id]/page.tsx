@@ -24,13 +24,22 @@ export default async function IncidentPage({
     <main className="mx-auto max-w-6xl space-y-6 p-6">
       <PageHeader
   title="Emergency Incident"
-  description={new Date(incident.createdAt).toLocaleString()}
+  description={new Date(incident.createdAt).toLocaleString("en-IN", {
+  timeZone: "Asia/Kolkata",
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: true,
+})}
 />
           
           <CallTimeline calls={incident.calls} />
 
 <section className="space-y-4">
-  <h2 className="text-2xl font-bold">
+  <h2 className="text-2xl font-bold"> 
     📍 Live Tracking Route
   </h2>
 

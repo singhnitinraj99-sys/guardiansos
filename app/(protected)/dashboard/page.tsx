@@ -3,7 +3,7 @@ import WelcomeCard from "@/components/dashboard/WelcomeCard";
 import DashboardCard from "@/components/dashboard/DashboardCard";
 
 import { Users, ShieldAlert, Settings } from "lucide-react";
-
+import Link from "next/link";
 import { getDashboardData } from "@/actions/dashboard.actions";
 import { syncUser } from "@/actions/user.actions";
 import ShakeListener from "@/components/sos/ShakeListener";
@@ -33,27 +33,30 @@ export default async function DashboardPage() {
 
     </CardContent>
 </Card>
-
+            <Link href="/contacts">
         <DashboardCard
           title="Emergency Contacts"
           value={`${user?.contacts.length ?? 0}/5`}
           description="Saved Contacts"
           icon={Users}
         />
-
+        </Link>
+            <Link href="/history">
         <DashboardCard
           title="Last SOS"
           value={user?.logs.length ? "Available" : "Never"}
           description="Latest Emergency"
           icon={ShieldAlert}
         />
-
+        </Link>
+           <Link href="/settings">
         <DashboardCard
           title="Countdown"
           value={`${user?.settings?.countdown ?? 5}s`}
           description="Current Setting"
           icon={Settings}
         />
+        </Link>
 
         <ShakeListener threshold={12} />
 

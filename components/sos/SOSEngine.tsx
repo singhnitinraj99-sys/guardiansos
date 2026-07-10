@@ -46,13 +46,15 @@ export default function SOSEngine({
     mapLocationEnabled={settings.mapLocationEnabled}
 />      
    
- <Button
+ <Button className="w-full "
   onClick={() => {
     startSOS();
   }}
 >
-  Trigger SOS
+ 🚨 Trigger SOS
 </Button>
+
+
    <StopSOSButton />
     </>
   );
