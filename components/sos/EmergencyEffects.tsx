@@ -12,7 +12,7 @@ interface Props {
   active: boolean;
   volume: number;
   vibrationEnabled: boolean;
-  locationEnabled: boolean;
+  mapLocationEnabled: boolean;
 }
 
 export default function EmergencyEffects({

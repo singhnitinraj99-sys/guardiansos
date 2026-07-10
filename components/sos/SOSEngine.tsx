@@ -43,7 +43,7 @@ export default function SOSEngine({
   active={alarmActive}
   volume={settings.alarmVolume}
     vibrationEnabled={settings.vibration}
-    locationEnabled={settings.locationEnabled}
+    mapLocationEnabled={settings.mapLocationEnabled}
 />      
    
  <Button

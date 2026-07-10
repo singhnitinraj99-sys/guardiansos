@@ -53,7 +53,7 @@ CREATE TABLE "UserSettings" (
     "alarmVolume" INTEGER NOT NULL DEFAULT 100,
     "vibration" BOOLEAN NOT NULL DEFAULT true,
     "smsEnabled" BOOLEAN NOT NULL DEFAULT true,
-    "locationEnabled" BOOLEAN NOT NULL DEFAULT true,
+    "mapLocationEnabled" BOOLEAN NOT NULL DEFAULT true,
     "darkMode" BOOLEAN NOT NULL DEFAULT false,
     "userId" TEXT NOT NULL,
 
