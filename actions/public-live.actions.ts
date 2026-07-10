@@ -2,20 +2,11 @@
 
 import { prisma } from "@/lib/prisma";
 
-export async function getPublicLiveTracking(
-  id: string
-) {
+export async function getLiveTracking(id: string) {
   const incident = await prisma.sOSLog.findUnique({
-    where: {
-      id,
-    },
+    where: { id },
     include: {
-      locations: {
-        orderBy: {
-          createdAt: "asc",
-        },
-      },
-      calls: {
+      liveLocations: {
         orderBy: {
           createdAt: "asc",
         },
@@ -27,5 +18,10 @@ export async function getPublicLiveTracking(
     throw new Error("Tracking not found");
   }
 
-  return incident;
+  return {
+    id: incident.id,
+    status: incident.status,
+    createdAt: incident.createdAt,
+    locations: incident.liveLocations,
+  };
 }

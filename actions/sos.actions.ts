@@ -56,19 +56,42 @@ export async function startEmergency({
     // Google Maps URL
     // ==========================
 
-    const locationUrl =
+    const mapsUrl =
       latitude !== undefined && longitude !== undefined
         ? createGoogleMapsLink(latitude, longitude)
         : undefined;
 
     // ==========================
-    // Emergency Message
+    // Create SOS Log FIRST
     // ==========================
 
-    const message = buildEmergencyMessage(
-      user.firstName ?? "GuardianSOS User",
-      locationUrl
-    );
+    const log = await prisma.sOSLog.create({
+      data: {
+        latitude,
+        longitude,
+        status: "PENDING",
+        userId: user.id,
+      },
+    });
+
+    // ==========================
+    // Live Tracking URL
+    // ==========================
+
+    const appUrl =
+  process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ??
+  "http://localhost:3000";
+
+const liveUrl = `${appUrl}/live/${log.id}`;
+    // ==========================
+    // Build Emergency Message
+    // ==========================
+
+    const message = buildEmergencyMessage({
+      name: user.firstName ?? "GuardianSOS User",
+      mapsUrl,
+      liveUrl,
+    });
 
     // ==========================
     // Send SMS
@@ -85,11 +108,11 @@ export async function startEmergency({
     let successCount = 0;
 
     for (const contact of user.contacts) {
-      try {
-        const phone = contact.phone.startsWith("+")
-          ? contact.phone
-          : `+91${contact.phone}`;
+      const phone = contact.phone.startsWith("+")
+        ? contact.phone
+        : `+91${contact.phone}`;
 
+      try {
         const response = await twilio.messages.create({
           body: message,
           from: process.env.TWILIO_PHONE!,
@@ -108,10 +131,6 @@ export async function startEmergency({
       } catch (error) {
         console.error(`SMS failed for ${contact.name}`, error);
 
-        const phone = contact.phone.startsWith("+")
-          ? contact.phone
-          : `+91${contact.phone}`;
-
         smsResults.push({
           contactId: contact.id,
           name: contact.name,
@@ -122,16 +141,16 @@ export async function startEmergency({
     }
 
     // ==========================
-    // Create SOS Log
+    // Update SOS Log
     // ==========================
 
-    const log = await prisma.sOSLog.create({
+    await prisma.sOSLog.update({
+      where: {
+        id: log.id,
+      },
       data: {
-        latitude,
-        longitude,
         message,
         status: successCount > 0 ? "SENT" : "FAILED",
-        userId: user.id,
       },
     });
 

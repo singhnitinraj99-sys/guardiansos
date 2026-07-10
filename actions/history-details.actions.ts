@@ -32,7 +32,7 @@ export async function getEmergencyDetails(id: string) {
         },
       },
 
-      locations: {
+      liveLocations: {
         orderBy: {
           createdAt: "asc",
         },
@@ -44,5 +44,8 @@ export async function getEmergencyDetails(id: string) {
     throw new Error("Incident not found");
   }
 
-  return incident;
+return {
+  ...incident,
+  locations: incident.liveLocations,
+}
 }

@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 
 import { getLiveTracking } from "@/actions/live-tracking.actions";
-
 import LiveStatusCard from "./LiveStatusCard";
 import RouteMap from "@/components/history/details/RouteMap";
 import RouteStats from "@/components/history/details/RouteStats";
@@ -11,38 +10,44 @@ import RouteTimeline from "@/components/history/details/RouteTimeline";
 
 import { calculateRouteStats } from "@/lib/calculateRouteStats";
 
+interface LiveLocation {
+  id: string;
+  latitude: number;
+  longitude: number;
+  accuracy: number | null;
+  speed: number | null;
+  heading: number | null;
+  createdAt: Date;
+}
+
+interface Incident {
+  id: string;
+  status: string;
+  createdAt: Date;
+  locations: LiveLocation[];
+}
 interface Props {
-  incident: Awaited<
-    ReturnType<
-      typeof import("@/actions/public-live.actions").getPublicLiveTracking
-    >
-  >;
+  incident: Incident;
 }
 
 export default function LiveTracker({
   incident,
 }: Props) {
-  const [data, setData] = useState(incident);
+  const [data, setData] = useState<Props["incident"]>(incident);
 
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
         const latest = await getLiveTracking(data.id);
 
-        // Update only the fields that actually change
-        setData((prev) => ({
-          ...prev,
-          status: latest.status,
-          locations: latest.locations,
-        }));
-
+        setData(latest);
         if (
-          latest.status === "SENT" ||
-          latest.status === "FAILED" ||
-          latest.status === "OFFLINE"
-        ) {
-          clearInterval(interval);
-        }
+  latest.status === "SENT" ||
+  latest.status === "FAILED" ||
+  latest.status === "OFFLINE"
+) {
+  clearInterval(interval);
+}
       } catch (error) {
         console.error(error);
       }
@@ -53,18 +58,18 @@ export default function LiveTracker({
 
   const stats = calculateRouteStats(data.locations);
 
-  const lastUpdated =
-    data.locations.length > 0
-      ? data.locations[data.locations.length - 1].createdAt
-      : data.createdAt;
-
   return (
     <div className="space-y-8">
-      <LiveStatusCard
-        status={data.status}
-        points={data.locations.length}
-        updatedAt={lastUpdated}
-      />
+
+        <LiveStatusCard
+    status={data.status}
+    points={data.locations.length}
+    updatedAt={
+  data.locations.length > 0
+    ? data.locations[data.locations.length - 1].createdAt
+    : data.createdAt
+}
+/>
 
       <RouteStats stats={stats} />
 

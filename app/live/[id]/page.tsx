@@ -1,5 +1,5 @@
-import { getPublicLiveTracking } from "@/actions/public-live.actions";
 
+import { getLiveTracking } from "@/actions/live-tracking.actions";
 import LiveTracker from "@/components/live/LiveTracker";
 
 interface Props {
@@ -13,8 +13,7 @@ export default async function LivePage({
 }: Props) {
   const { id } = await params;
 
-  const incident =
-    await getPublicLiveTracking(id);
+  const incident = await getLiveTracking(id);
 
   return (
     <main className="mx-auto max-w-7xl p-6">

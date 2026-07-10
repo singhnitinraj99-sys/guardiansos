@@ -14,7 +14,7 @@ export async function getLiveTracking(sosLogId: string) {
       id: sosLogId,
     },
     include: {
-      locations: {
+      liveLocations: {
         orderBy: {
           createdAt: "asc",
         },
@@ -27,13 +27,9 @@ export async function getLiveTracking(sosLogId: string) {
   }
 
   return {
-    id: incident.id,
-    status: incident.status,
-    createdAt: incident.createdAt,
-    updatedAt:
-  incident.locations.length > 0
-    ? incident.locations[incident.locations.length - 1].createdAt
-    : incident.createdAt,
-    locations: incident.locations,
-  };
+  id: incident.id,
+  status: incident.status,
+  createdAt: incident.createdAt,
+  locations: incident.liveLocations,
+};
 }
