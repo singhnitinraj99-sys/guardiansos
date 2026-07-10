@@ -24,8 +24,9 @@ export default function EmergencyWorkflow() {
 
   //live tracking hook to save the current location to the database
 useLiveTracking({
-  enabled: alarmActive && !!currentSOSLogId,
-
+    enabled:
+    alarmActive &&
+    !!currentSOSLogId,
   onLocation: async (position) => {
     if (!currentSOSLogId) return;
 

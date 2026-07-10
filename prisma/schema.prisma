@@ -6,6 +6,104 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id        String             @id @default(cuid())
+  clerkId   String             @unique
+  email     String             @unique
+  firstName String?
+  lastName  String?
+  imageUrl  String?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  callLogs  EmergencyCallLog[]
+  contacts  EmergencyContact[]
+  logs      SOSLog[]
+  settings  UserSettings?
+}
+
+model EmergencyContact {
+  id        String       @id @default(cuid())
+  name      String
+  phone     String
+  relation  RelationType
+  isPrimary Boolean      @default(false)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  userId    String
+  priority  Int          @default(5)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, phone])
+  @@index([userId])
+}
+
+model SOSLog {
+  id            String             @id @default(cuid())
+  latitude      Float?
+  longitude     Float?
+  message       String?
+  status        SOSStatus
+  createdAt     DateTime           @default(now())
+  userId        String
+  calls         EmergencyCallLog[]
+  liveLocations LiveLocation[]
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model EmergencyCallLog {
+  id           String     @id @default(cuid())
+  callSid      String     @unique
+  phone        String
+  contactId    String
+  contactName  String
+  status       CallStatus
+  duration     Int?
+  attempt      Int        @default(1)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  userId       String
+  sosLogId     String
+  retryStarted Boolean    @default(false)
+  sosLog       SOSLog     @relation(fields: [sosLogId], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([callSid])
+  @@index([contactId])
+  @@index([sosLogId])
+}
+
+model LiveLocation {
+  id        String   @id @default(cuid())
+  latitude  Float
+  longitude Float
+  accuracy  Float?
+  speed     Float?
+  heading   Float?
+  createdAt DateTime @default(now())
+  sosLogId  String
+  sosLog    SOSLog   @relation(fields: [sosLogId], references: [id], onDelete: Cascade)
+
+  @@index([sosLogId])
+  @@index([createdAt])
+}
+
+model UserSettings {
+  id                  String  @id @default(cuid())
+  shakeSensitivity    Int     @default(16)
+  countdown           Int     @default(5)
+  alarmVolume         Int     @default(100)
+  vibration           Boolean @default(true)
+  smsEnabled          Boolean @default(true)
+  darkMode            Boolean @default(false)
+  userId              String  @unique
+  liveLocationEnabled Boolean @default(true)
+  mapLocationEnabled  Boolean @default(true)
+  user                User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 enum RelationType {
   PARENT
   SPOUSE
@@ -15,80 +113,11 @@ enum RelationType {
   OTHER
 }
 
-model User {
-  id        String   @id @default(cuid())
-
-  clerkId   String   @unique
-
-  email     String   @unique
-
-  firstName String?
-
-  lastName  String?
-
-  imageUrl  String?
-
-  createdAt DateTime @default(now())
-
-  updatedAt DateTime @updatedAt
-
-  contacts  EmergencyContact[]
-
-  logs       SOSLog[]
-
-  callLogs   EmergencyCallLog[]
-
-  settings   UserSettings?
-}
-model EmergencyContact {
-  id         String   @id @default(cuid())
-
-  name       String
-
-  phone      String
-
-  relation   RelationType
-
-  priority   Int      @default(5)
-
-  isPrimary  Boolean  @default(false)
-
-  createdAt  DateTime @default(now())
-
-  updatedAt  DateTime @updatedAt
-
-  userId     String
-
-  user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-
-  @@unique([userId, phone])
-}
-
 enum SOSStatus {
   PENDING
   SENT
   FAILED
   OFFLINE
-}
-
-model SOSLog {
-  id        String    @id @default(cuid())
-  latitude  Float?
-  longitude Float?
-  message   String?
-  status    SOSStatus
-  createdAt DateTime  @default(now())
-
-  userId String
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  calls EmergencyCallLog[]
-
-  liveLocations LiveLocation[]
-
-  @@index([userId])
 }
 
 enum CallStatus {
@@ -101,75 +130,4 @@ enum CallStatus {
   NO_ANSWER
   FAILED
   CANCELED
-}
-
-model EmergencyCallLog {
-  id          String     @id @default(cuid())
-  callSid     String     @unique
-  phone       String
-  contactId   String
-  contactName String
-  status      CallStatus
-  duration    Int?
-  attempt     Int        @default(1)
-
-  retryStarted Boolean   @default(false)
-
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-
-  userId String
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  sosLogId String
-  sosLog   SOSLog @relation(fields: [sosLogId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([callSid])
-  @@index([contactId])
-  @@index([sosLogId])
-}
-
-model LiveLocation {
-  id        String   @id @default(cuid())
-
-  latitude  Float
-  longitude Float
-
-  accuracy  Float?
-
-  speed     Float?
-  heading   Float?
-
-  createdAt DateTime @default(now())
-
-  sosLogId String
-  sosLog   SOSLog @relation(fields: [sosLogId], references: [id], onDelete: Cascade)
-
-  @@index([sosLogId])
-  @@index([createdAt])
-}
-
-model UserSettings {
-
-  id String @id @default(cuid())
-
-  shakeSensitivity Int @default(16)
-
-  countdown Int @default(5)
-
-  alarmVolume Int @default(100)
-
-  vibration Boolean @default(true)
-
-  smsEnabled Boolean @default(true)
-
-  locationEnabled Boolean @default(true)
-
-  darkMode Boolean @default(false)
-
-  userId String @unique
-
-  user User @relation(fields:[userId], references:[id], onDelete:Cascade)
-
 }

@@ -31,18 +31,19 @@ export async function startEmergency({
     // Get User + Contacts
     // ==========================
 
-    const user = await prisma.user.findUnique({
-      where: {
-        clerkId: clerkUser.id,
+  const user = await prisma.user.findUnique({
+  where: {
+    clerkId: clerkUser.id,
+  },
+  include: {
+    contacts: {
+      orderBy: {
+        isPrimary: "desc",
       },
-      include: {
-        contacts: {
-          orderBy: {
-            isPrimary: "desc",
-          },
-        },
-      },
-    });
+    },
+    settings: true,
+  },
+});
 
     if (!user) {
       throw new Error("User not found");
@@ -57,10 +58,11 @@ export async function startEmergency({
     // ==========================
 
     const mapsUrl =
-      latitude !== undefined && longitude !== undefined
+    user.settings?.mapLocationEnabled &&
+    latitude &&
+    longitude
         ? createGoogleMapsLink(latitude, longitude)
         : undefined;
-
     // ==========================
     // Create SOS Log FIRST
     // ==========================
@@ -82,8 +84,12 @@ export async function startEmergency({
   process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ??
   "http://localhost:3000";
 
-const liveUrl = `${appUrl}/live/${log.id}`;
-    // ==========================
+//const liveUrl = `${appUrl}/live/${log.id}`;
+const liveUrl =
+  user.settings?.liveLocationEnabled
+    ? `${appUrl}/live/${log.id}`
+    : undefined;
+// ==========================
     // Build Emergency Message
     // ==========================
 

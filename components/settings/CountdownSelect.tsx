@@ -22,10 +22,15 @@ import {
 
 interface Props {
   control: Control<SettingsInput>;
+
+  disabled?: boolean;
+
+  onChangeComplete?: () => void;
 }
 
 export default function CountdownSelect({
   control,
+  
 }: Props) {
   return (
     <FormField

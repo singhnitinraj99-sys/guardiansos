@@ -26,15 +26,16 @@ export default function SettingsForm({ settings }: Props) {
   const form = useForm<SettingsInput>({
     resolver: zodResolver(SettingsSchema),
 
-    defaultValues: {
-      shakeSensitivity: settings.shakeSensitivity,
-      countdown: settings.countdown,
-      alarmVolume: settings.alarmVolume,
-      vibration: settings.vibration,
-      smsEnabled: settings.smsEnabled,
-      locationEnabled: settings.locationEnabled,
-      darkMode: settings.darkMode,
-    },
+   defaultValues: {
+    shakeSensitivity: settings.shakeSensitivity,
+    countdown: settings.countdown,
+    alarmVolume: settings.alarmVolume,
+    vibration: settings.vibration,
+    smsEnabled: settings.smsEnabled,
+    mapLocationEnabled: settings.mapLocationEnabled,
+    liveLocationEnabled: settings.liveLocationEnabled,
+    darkMode: settings.darkMode,
+},
   });
 
   function onSubmit(values: SettingsInput) {
@@ -93,13 +94,19 @@ export default function SettingsForm({ settings }: Props) {
           description="Send emergency SMS."
         />
 
-        <SwitchField
-          control={form.control}
-          name="locationEnabled"
-          label="Share Location"
-          description="Include live location."
-        />
+    <SwitchField
+    control={form.control}
+    name="mapLocationEnabled"
+    label="Current Map Location"
+    description="Send a Google Maps link in the SOS SMS."
+/>
 
+<SwitchField
+    control={form.control}
+    name="liveLocationEnabled"
+    label="Live Location Tracking"
+    description="Continuously update your location until SOS ends."
+/>
         <SwitchField
           control={form.control}
           name="darkMode"
