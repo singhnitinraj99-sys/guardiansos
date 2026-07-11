@@ -8,9 +8,9 @@ interface Props {
 
 export default function ShakeListener({ threshold }: Props) {
   function handleEmergencyDetected() {
-    alert("Double Shake Detected!");
+    console.log("Emergency detected!");
   }
-
+  
   return (
     <ShakeDetector
       threshold={threshold}

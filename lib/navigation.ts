@@ -32,4 +32,9 @@ export const navigation = [
     href: "/sos",
     icon: ShieldAlert,
   },
+  {
+  title: "Users",
+  href: "/admin/users",
+  icon: Users,
+}
 ];

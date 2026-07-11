@@ -8,7 +8,7 @@ export default async function ProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await syncUser;
+  await syncUser();
   return (
     <SOSProvider>
       <SOSEngineServer />

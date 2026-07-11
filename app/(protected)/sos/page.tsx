@@ -15,6 +15,8 @@ export default function SOSPage() {
       />
 
       <div className="mx-auto flex max-w-md flex-col gap-4">
+        
+        
         <Button
           size="lg"
           className="w-full bg-red-600 hover:bg-red-700"
