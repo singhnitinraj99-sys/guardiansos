@@ -26,16 +26,7 @@ export default async function AdminUserPage({
 
   return (
     <div className="space-y-6">
-      <Button
-        asChild
-        variant="outline"
-        className="w-fit"
-      >
-        <Link href="/admin/users">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back
-        </Link>
-      </Button>
+    
 
       <PageHeader
         title={`${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() || "User"}

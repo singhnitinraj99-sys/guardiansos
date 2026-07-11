@@ -105,7 +105,7 @@ export default function UsersTable({
                 </TableCell>
 
                 <TableCell>
-                  <Badge variant="secondary">
+                  <Badge variant="outline">
                     {user._count.contacts}
                   </Badge>
                 </TableCell>

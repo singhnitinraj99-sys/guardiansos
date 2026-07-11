@@ -183,7 +183,7 @@ export default function UserSOSHistory({
                       variant="outline"
                     >
                       <Link
-                        href={`/admin/incidents/${log.id}`}
+                        href={`/admin/sos-logs/${log.id}`}
                       >
                         <Eye className="mr-2 h-4 w-4" />
                         View

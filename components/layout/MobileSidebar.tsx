@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Menu } from "lucide-react";
+import { Menu, Shield } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import {
@@ -15,8 +15,27 @@ import { navigation } from "@/lib/navigation";
 import Logo from "@/components/shared/Logo";
 import { cn } from "@/lib/utils";
 
-export default function MobileSidebar() {
+interface MobileSidebarProps {
+  isAdmin: boolean;
+}
+
+export default function MobileSidebar({
+  isAdmin,
+}: MobileSidebarProps) {
   const pathname = usePathname();
+
+  const items = [
+    ...navigation,
+    ...(isAdmin
+      ? [
+          {
+            title: "Admin",
+            href: "/admin",
+            icon: Shield,
+          },
+        ]
+      : []),
+  ];
 
   return (
     <Sheet>
@@ -30,27 +49,37 @@ export default function MobileSidebar() {
         </Button>
       </SheetTrigger>
 
-      <SheetContent side="left" className="w-72 p-0">
+      <SheetContent
+        side="left"
+        className="w-72 p-0"
+      >
         <div className="border-b p-6">
           <Logo />
         </div>
 
         <nav className="space-y-2 p-4">
-          {navigation.map((item) => {
+          {items.map((item) => {
             const Icon = item.icon;
+
+            const active =
+              item.href === "/admin"
+                ? pathname === "/admin" ||
+                  pathname.startsWith("/admin/")
+                : pathname === item.href;
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-4 py-3 hover:bg-muted",
-                  pathname === item.href &&
-                    "bg-red-600 text-white"
+                  "flex items-center gap-3 rounded-lg px-4 py-3 transition-colors hover:bg-muted",
+                  active &&
+                    "bg-red-600 text-white hover:bg-red-600"
                 )}
               >
                 <Icon className="h-5 w-5" />
-                {item.title}
+
+                <span>{item.title}</span>
               </Link>
             );
           })}

@@ -1,11 +1,7 @@
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
-
-
 
 import PageHeader from "@/components/shared/PageHeader";
 
-import { Button } from "@/components/ui/button";
+
 
 import UsersTable from "@/components/admin/UsersTable";
 import UserSearch from "@/components/admin/UserSearch";
@@ -35,17 +31,7 @@ export default async function AdminUsersPage({
 
   return (
     <div className="space-y-6">
-      <Button
-        asChild
-        variant="outline"
-        className="w-fit"
-      >
-        <Link href="/admin">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Dashboard
-        </Link>
-      </Button>
-
+      
       <PageHeader
         title="Users"
         description="Manage all GuardianSOS users"

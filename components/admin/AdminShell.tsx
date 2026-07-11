@@ -10,16 +10,16 @@ export default function AdminShell({
   children,
 }: Props) {
   return (
-    <div className="flex min-h-screen">
-      <AdminSidebar />
+   <div className="flex min-h-screen">
+  <AdminSidebar />
 
-      <div className="flex flex-1 flex-col">
-        <AdminNavbar />
+  <div className="flex flex-1 flex-col">
+    <AdminNavbar />
 
-        <main className="flex-1 p-6">
-          {children}
-        </main>
-      </div>
-    </div>
-  );
+    <main className="flex-1 p-6">
+      {children}
+    </main>
+  </div>
+</div>
+ );
 }

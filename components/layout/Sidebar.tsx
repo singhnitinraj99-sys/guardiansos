@@ -2,12 +2,33 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Shield } from "lucide-react";
+
 import { navigation } from "@/lib/navigation";
 import Logo from "@/components/shared/Logo";
 import { cn } from "@/lib/utils";
 
-export default function Sidebar() {
+interface SidebarProps {
+  isAdmin: boolean;
+}
+
+export default function Sidebar({
+  isAdmin,
+}: SidebarProps) {
   const pathname = usePathname();
+
+  const items = [
+    ...navigation,
+    ...(isAdmin
+      ? [
+          {
+            title: "Admin",
+            href: "/admin",
+            icon: Shield,
+          },
+        ]
+      : []),
+  ];
 
   return (
     <aside className="hidden md:flex w-64 flex-col border-r bg-background">
@@ -15,8 +36,8 @@ export default function Sidebar() {
         <Logo />
       </div>
 
-      <nav className="flex-1 p-4 space-y-2">
-        {navigation.map((item) => {
+      <nav className="flex-1 space-y-2 p-4">
+        {items.map((item) => {
           const Icon = item.icon;
 
           return (

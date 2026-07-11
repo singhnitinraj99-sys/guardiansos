@@ -2,8 +2,6 @@ import {
   LayoutDashboard,
   Users,
   ShieldAlert,
-  History,
-  Settings,
 } from "lucide-react";
 
 export const adminNavigation = [
@@ -19,17 +17,7 @@ export const adminNavigation = [
   },
   {
     title: "SOS Logs",
-    href: "/admin/sos",
+    href: "/admin/sos-logs",
     icon: ShieldAlert,
-  },
-  {
-    title: "Reports",
-    href: "/admin/reports",
-    icon: History,
-  },
-  {
-    title: "Settings",
-    href: "/admin/settings",
-    icon: Settings,
   },
 ];

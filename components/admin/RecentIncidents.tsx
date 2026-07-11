@@ -29,6 +29,7 @@ export default function RecentIncidents({
 }: Props) {
   return (
     <Card>
+      
       <CardHeader>
         <CardTitle>Recent SOS Incidents</CardTitle>
       </CardHeader>
@@ -43,7 +44,7 @@ export default function RecentIncidents({
         {incidents.map((incident) => (
           <div
             key={incident.id}
-            className="flex items-center justify-between rounded-lg border p-3"
+            className="flex items-center justify-between rounded-lg border p-6"
           >
             <div>
               <p className="font-medium">

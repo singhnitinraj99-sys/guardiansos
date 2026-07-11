@@ -5,7 +5,7 @@ import PageHeader from "@/components/shared/PageHeader";
 import AdminStats from "@/components/admin/AdminStats";
 import RecentUsers from "@/components/admin/RecentUsers";
 import RecentIncidents from "@/components/admin/RecentIncidents";
-
+import Logo from "@/components/shared/Logo";
 export default async function AdminPage() {
   const data = await getAdminDashboardData();
 
